@@ -91,7 +91,7 @@ public class UpdateTodoCommandHandlerTest : RequestHandlerTestBase<UpdateTodoCom
     }
     
     [Theory, FixtureInlineAutoData]
-    public async Task Should_ThrowForbidden_When_TodoNotFound(UpdateTodoCommand command)
+    public async Task Should_ThrowNotFound_When_TodoNotFound(UpdateTodoCommand command)
     {
         // arrange
 
