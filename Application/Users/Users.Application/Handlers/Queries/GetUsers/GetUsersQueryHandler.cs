@@ -1,6 +1,6 @@
 using AutoMapper;
 using Core.Application.Abstractions.Persistence.Repository.Read;
-using Core.Application.BaseRealisations;
+using Core.Application.BaseRealizations;
 using Core.Application.DTOs;
 using Core.Users.Domain;
 using Users.Application.Caches;

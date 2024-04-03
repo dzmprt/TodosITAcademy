@@ -7,6 +7,7 @@ using Core.Users.Domain;
 using Core.Users.Domain.Enums;
 using MediatR;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Users.Application.Caches;
 using Users.Application.Dtos;
 
@@ -20,15 +21,19 @@ internal class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Get
     
     private readonly ApplicationUsersListMemoryCache _listCache;
     
+    private readonly ILogger<CreateUserCommandHandler> _logger;
+
     private readonly ApplicationUsersCountMemoryCache _countCache;
 
     public CreateUserCommandHandler(IBaseWriteRepository<ApplicationUser> users, IMapper mapper,
         ApplicationUsersListMemoryCache listCache,
+        ILogger<CreateUserCommandHandler> logger,
         ApplicationUsersCountMemoryCache countCache)
     {
         _users = users;
         _mapper = mapper;
         _listCache = listCache;
+        _logger = logger;
         _countCache = countCache;
     }
 
@@ -58,6 +63,8 @@ internal class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Get
         
         _listCache.Clear();
         _countCache.Clear();
+        
+        _logger.LogInformation($"New user {user.ApplicationUserId} created.");
         
         return _mapper.Map<GetUserDto>(user);
     }

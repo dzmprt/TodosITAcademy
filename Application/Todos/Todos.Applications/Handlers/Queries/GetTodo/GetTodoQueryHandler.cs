@@ -1,6 +1,6 @@
 using AutoMapper;
 using Core.Application.Abstractions.Persistence.Repository.Read;
-using Core.Application.BaseRealisations;
+using Core.Application.BaseRealizations;
 using Core.Application.Exceptions;
 using Core.Auth.Application.Abstractions.Service;
 using Core.Auth.Application.Exceptions;

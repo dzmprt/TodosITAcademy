@@ -1,4 +1,4 @@
-﻿using Core.Application.BaseRealisations;
+﻿using Core.Application.BaseRealizations;
 using Core.ArchitectureTests.Utils;
 using MediatR;
 using NetArchTest.Rules;

@@ -6,6 +6,7 @@ using Core.Auth.Application.Utils;
 using Core.Users.Domain;
 using Core.Users.Domain.Enums;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Users.Application.Handlers.Commands.UpdateUserPassword;
 
@@ -14,13 +15,17 @@ internal class UpdateUserPasswordCommandHandler : IRequestHandler<UpdateUserPass
     private readonly IBaseWriteRepository<ApplicationUser> _users;
     
     private readonly ICurrentUserService _currentUserService;
+    
+    private readonly ILogger<UpdateUserPasswordCommandHandler> _logger;
 
     public UpdateUserPasswordCommandHandler(
         IBaseWriteRepository<ApplicationUser> users, 
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        ILogger<UpdateUserPasswordCommandHandler> logger)
     {
         _users = users;
         _currentUserService = currentUserService;
+        _logger = logger;
     }
     
     public async Task Handle(UpdateUserPasswordCommand request, CancellationToken cancellationToken)
@@ -44,5 +49,7 @@ internal class UpdateUserPasswordCommandHandler : IRequestHandler<UpdateUserPass
         user.PasswordHash = newPasswordHash;
         user.UpdatedDate = DateTime.UtcNow;
         await _users.UpdateAsync(user, cancellationToken);
+        
+        _logger.LogWarning($"User password for {user.ApplicationUserId.ToString()} updated by {_currentUserService.CurrentUserId.ToString()}");
     }
 }

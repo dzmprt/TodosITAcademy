@@ -2,7 +2,7 @@ using System.Reflection;
 using AutoMapper;
 using Core.Application.Abstractions.Mappings;
 
-namespace Core.Application.BaseRealisations;
+namespace Core.Application.BaseRealizations;
 
 public abstract class MappingRegister : Profile
 {

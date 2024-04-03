@@ -1,4 +1,4 @@
-using Core.Application.BaseRealisations;
+using Core.Application.BaseRealizations;
 using Users.Application.Dtos;
 
 namespace Users.Application.Caches;

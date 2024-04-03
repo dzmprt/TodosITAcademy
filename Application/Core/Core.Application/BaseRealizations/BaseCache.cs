@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Reflection;
-using System.Reflection.Emit;
 using System.Text.Json;
 using Core.Application.Abstractions;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Core.Application.BaseRealisations;
+namespace Core.Application.BaseRealizations;
 
 public abstract class BaseCache<TItem> : IBaseCache<TItem>
 {

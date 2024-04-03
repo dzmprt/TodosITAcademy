@@ -12,7 +12,7 @@ public static class DependencyInjection
         return services
             .AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
             .AddAutoMapper(Assembly.GetExecutingAssembly())
-            .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly())
+            .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly(), includeInternalTypes: true)
             .AddSingleton<TodoMemoryCache>()
             .AddSingleton<TodosListMemoryCache>()
             .AddSingleton<TodosCountMemoryCache>()

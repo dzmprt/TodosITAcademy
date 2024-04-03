@@ -6,6 +6,7 @@ using Core.Users.Domain;
 using Core.Users.Domain.Enums;
 using Core.Auth.Application.Exceptions;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Users.Application.Caches;
 using Users.Application.Dtos;
 
@@ -24,12 +25,15 @@ internal class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Get
     private readonly ApplicationUsersCountMemoryCache _applicationUsersCountMemoryCache;
     
     private readonly ApplicationUserMemoryCache _applicationUserMemoryCache;
+    
+    private readonly ILogger<UpdateUserCommandHandler> _logger;
 
     public UpdateUserCommandHandler(IBaseWriteRepository<ApplicationUser> users, IMapper mapper,
         ICurrentUserService currentUserService,
         ApplicationUsersListMemoryCache applicationUsersListMemoryCache,
         ApplicationUsersCountMemoryCache applicationUsersCountMemoryCache,
-        ApplicationUserMemoryCache applicationUserMemoryCache)
+        ApplicationUserMemoryCache applicationUserMemoryCache,
+        ILogger<UpdateUserCommandHandler> logger)
     {
         _users = users;
         _mapper = mapper;
@@ -37,6 +41,7 @@ internal class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Get
         _applicationUsersListMemoryCache = applicationUsersListMemoryCache;
         _applicationUsersCountMemoryCache = applicationUsersCountMemoryCache;
         _applicationUserMemoryCache = applicationUserMemoryCache;
+        _logger = logger;
     }
 
     public async Task<GetUserDto> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
@@ -63,7 +68,8 @@ internal class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Get
         _applicationUsersListMemoryCache.Clear();
         _applicationUsersCountMemoryCache.Clear();
         _applicationUserMemoryCache.Set(new GetUserDto {ApplicationUserId = user.ApplicationUserId}, result, 1);
-        
+        _logger.LogWarning($"User {user.ApplicationUserId.ToString()} updated by {_currentUserService.CurrentUserId.ToString()}");
+
         return result;
     }
 }

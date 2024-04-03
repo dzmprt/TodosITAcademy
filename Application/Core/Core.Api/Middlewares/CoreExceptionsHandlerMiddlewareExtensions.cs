@@ -3,12 +3,13 @@ using Core.Application.Exceptions;
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace Core.Api.Middlewares;
 
 internal class CoreExceptionsHandlerMiddleware(RequestDelegate next)
 {
-    public async Task Invoke(HttpContext context)
+    public async Task Invoke(HttpContext context, ILogger<CoreExceptionsHandlerMiddleware> logger)
     {
         try
         {
@@ -16,11 +17,11 @@ internal class CoreExceptionsHandlerMiddleware(RequestDelegate next)
         }
         catch (Exception exception)
         {
-            await HandleExceptionAsync(context, exception);
+            await HandleExceptionAsync(context, exception, logger);
         }
     }
 
-    private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private static Task HandleExceptionAsync(HttpContext context, Exception exception, ILogger<CoreExceptionsHandlerMiddleware> logger)
     {
         var code = HttpStatusCode.InternalServerError;
         var result = string.Empty;
@@ -45,6 +46,8 @@ internal class CoreExceptionsHandlerMiddleware(RequestDelegate next)
 
         if (result == string.Empty)
             result = System.Text.Json.JsonSerializer.Serialize(new {error = exception.Message, innerMessage = exception.InnerException?.Message, exception.StackTrace});
+        
+        logger.Log(code == HttpStatusCode.InternalServerError ? LogLevel.Error : LogLevel.Warning, exception, $"Response error {code}: {exception.Message}");
 
         return context.Response.WriteAsync(result);
     }

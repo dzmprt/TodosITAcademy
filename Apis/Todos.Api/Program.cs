@@ -22,7 +22,7 @@ try
         .WriteTo.Console()
 #endif
         .WriteTo.File($"{builder.Configuration["Logging:LogsFolder"]}/Information-.txt", LogEventLevel.Information,
-            rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7, buffered: true)
+            rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3, buffered: true)
         .WriteTo.File($"{builder.Configuration["Logging:LogsFolder"]}/Warning-.txt", LogEventLevel.Warning,
             rollingInterval: RollingInterval.Day, retainedFileCountLimit: 14, buffered: true)
         .WriteTo.File($"{builder.Configuration["Logging:LogsFolder"]}/Error-.txt", LogEventLevel.Error,

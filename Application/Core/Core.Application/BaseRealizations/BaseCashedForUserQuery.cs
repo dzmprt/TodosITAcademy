@@ -1,7 +1,7 @@
 using Core.Application.Abstractions;
 using MediatR;
 
-namespace Core.Application.BaseRealisations;
+namespace Core.Application.BaseRealizations;
 
 public abstract class BaseCashedForUserQuery<TRequest, TResult> : IRequestHandler<TRequest, TResult> where TRequest: IRequest<TResult>
 {
