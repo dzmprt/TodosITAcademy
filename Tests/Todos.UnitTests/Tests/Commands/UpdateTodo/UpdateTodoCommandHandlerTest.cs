@@ -1,14 +1,14 @@
 using System.Linq.Expressions;
+using AutoFixture;
 using AutoMapper;
 using Core.Application.Abstractions.Persistence.Repository.Writing;
 using Core.Auth.Application.Abstractions.Service;
 using Core.Tests;
 using Core.Tests.Attributes;
 using Core.Tests.Fixtures;
-using MediatR;
-using AutoFixture;
 using Core.Tests.Helpers;
 using Core.Users.Domain.Enums;
+using MediatR;
 using Moq;
 using Todos.Applications.Caches;
 using Todos.Applications.DTOs;
@@ -17,7 +17,7 @@ using Todos.Applications.Handlers.Queries.GetTodos;
 using Todos.Domain;
 using Xunit.Abstractions;
 
-namespace Todos.UnitTests.Tests.Queries.UpdateTodo;
+namespace Todos.UnitTests.Tests.Commands.UpdateTodo;
 
 public class UpdateTodoCommandHandlerTest : RequestHandlerTestBase<UpdateTodoCommand, GetTodoDto>
 {
