@@ -54,7 +54,7 @@ public abstract class RequestHandlerTestBase<TCommand> : TestBase where TCommand
         await action.Should().ThrowAsync<NotFoundException>();
     }
     
-    protected async Task AssertThrowForbiddenFound(TCommand command)
+    protected async Task AssertThrowForbidden(TCommand command)
     {
         // act
         var action = () => CommandHandler.Handle(command, default);
@@ -111,7 +111,7 @@ public abstract class RequestHandlerTestBase<TCommand, TResult> : TestBase
         await action.Should().ThrowAsync<NotFoundException>();
     }
     
-    protected async Task AssertThrowForbiddenFound(TCommand command)
+    protected async Task AssertThrowForbidden(TCommand command)
     {
         // act
         var action = () => CommandHandler.Handle(command, default);

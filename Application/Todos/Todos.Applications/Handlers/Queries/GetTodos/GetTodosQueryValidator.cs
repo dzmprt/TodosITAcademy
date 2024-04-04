@@ -8,6 +8,6 @@ internal class GetTodosQueryValidator : AbstractValidator<GetTodosQuery>
     public GetTodosQueryValidator()
     {
         RuleFor(e => e).IsValidPaginationFilter();
-        RuleFor(e => e).IsValidListTodoFilter();
+        RuleFor(e => e).IsValidTodoFilter();
     }
 }
