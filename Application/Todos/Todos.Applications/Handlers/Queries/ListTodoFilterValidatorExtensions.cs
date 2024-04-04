@@ -12,7 +12,7 @@ internal class BaseListTodoFilterValidator : AbstractValidator<ListTodoFilter>
 
 public static class ListTodoFilterValidatorExtensions
 {
-    internal static IRuleBuilderOptions<T, ListTodoFilter> IsValidListTodoFilter<T>(this IRuleBuilder<T, ListTodoFilter> ruleBuilder)
+    internal static IRuleBuilderOptions<T, ListTodoFilter> IsValidTodoFilter<T>(this IRuleBuilder<T, ListTodoFilter> ruleBuilder)
     {
         return ruleBuilder
             .SetValidator(new BaseListTodoFilterValidator());

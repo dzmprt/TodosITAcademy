@@ -6,6 +6,6 @@ internal class GetTodosCountQueryValidator : AbstractValidator<GetTodosCountQuer
 {
     public GetTodosCountQueryValidator()
     {
-        RuleFor(e => e).IsValidListTodoFilter();
+        RuleFor(e => e).IsValidTodoFilter();
     }
 }

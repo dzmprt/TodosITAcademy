@@ -48,9 +48,7 @@ namespace Todos.UnitTests.Tests.Commands.UpdateTodoIsDone
         [Theory, FixtureInlineAutoData]
         public async Task Should_BeValid_When_UpdateIsDoneByAdmin(UpdateTodoIsDoneCommand command, Guid userId)
         {
-
             // arrange
-
             _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
             _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Admin)).Returns(true);
 
@@ -78,6 +76,7 @@ namespace Todos.UnitTests.Tests.Commands.UpdateTodoIsDone
             _todosMok.Setup(
                 p => p.AsAsyncRead().SingleOrDefaultAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default)
             ).ReturnsAsync(todo);
+            
            // act and assert
             await AssertNotThrow(command);
         }
@@ -85,9 +84,7 @@ namespace Todos.UnitTests.Tests.Commands.UpdateTodoIsDone
         [Theory, FixtureInlineAutoData]
         public async Task Should_NotFound_When_UpdateIsDone_NotExistsTodo(UpdateTodoIsDoneCommand command)
         {
-
             // arrange
-
             Todo? todo = null;
 
             _todosMok.Setup(

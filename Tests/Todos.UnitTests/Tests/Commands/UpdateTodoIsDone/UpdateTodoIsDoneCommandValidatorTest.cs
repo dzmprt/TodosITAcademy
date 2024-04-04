@@ -32,6 +32,7 @@ namespace Todos.UnitTests.Tests.Commands.UpdateTodoIsDone
             // act & assert
             AssertValid(update);
         }
+        
         [Fact]
         public void Should_NotValid_With_ZeroId()
         {

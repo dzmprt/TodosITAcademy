@@ -1,12 +1,8 @@
 ﻿using Core.Tests;
-using System;
 using AutoFixture;
-using Core.Tests.Attributes;
 using FluentValidation;
-using Todos.Applications.Handlers.Queries.GetTodos;
 using Xunit.Abstractions;
 using Todos.Applications.Handlers.Commands.UpdateTodo;
-using System.Text;
 
 namespace Todos.UnitTests.Tests.Commands.UpdateTodo
 {
@@ -18,60 +14,45 @@ namespace Todos.UnitTests.Tests.Commands.UpdateTodo
 
         protected override IValidator<UpdateTodoCommand> TestValidator => TestFixture.Create<UpdateTodoCommandValidator>();
 
-        [Fact]
-        public void Should_BeValid_When_RequestIsValid()
+        [Theory]
+        [InlineData("1", 1)]
+        [InlineData("Name", 123)]
+        [InlineData("12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890", 1)]
+        public void Should_BeValid_When_RequestIsValid(string name, int id)
         {
             // arrange
             var update = new UpdateTodoCommand
             {
                 IsDone = true,
-                Name = "Test",
-                TodoId = 1,
+                Name = name,
+                TodoId = id,
             };
             // act & assert
             AssertValid(update);
         }
-        [Fact]
-        public void Should_NotValid_With_ZeroId()
+        
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        public void Should_NotBeValid_When_TodoIdIsNotValid(int todoId)
         {
             // arrange
             var update = new UpdateTodoCommand
             {
                 IsDone = true,
                 Name = "1234",
-                TodoId = 0
+                TodoId = todoId
             };
             // act & assert
             AssertNotValid(update);
         }
-        [Fact]
-        public void Should_Valid_With_Valid_OneCharTodoName()
-        {
-            // arrange
-            var update = new UpdateTodoCommand
-            {
-                IsDone = true,
-                Name = "1",
-                TodoId = 1
-            };
-            // act & assert
-            AssertValid(update);
-        }
-        [Fact]
-        public void Should_Valid_With_Valid_200CharTodoName()
-        {
-            // arrange
-            var update = new UpdateTodoCommand
-            {
-                IsDone = true,
-                Name = new string('1', 200),
-                TodoId = 1
-            };
-            // act & assert
-            AssertValid(update);
-        }
-        [Fact]
-        public void Should_NotValid_With_NotValid_201CharTodoName()
+        
+        
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901")]
+        public void Should_NotBeValid_When_NameIsNotValid(string name)
         {
             // arrange
             var update = new UpdateTodoCommand
