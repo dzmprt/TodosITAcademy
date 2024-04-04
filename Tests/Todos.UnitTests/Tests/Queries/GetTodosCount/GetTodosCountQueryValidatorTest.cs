@@ -1,18 +1,19 @@
-﻿using Core.Tests;
+﻿using AutoFixture;
+using Core.Tests;
 using Core.Tests.Attributes;
 using FluentValidation;
-using Todos.Applications.Handlers.Queries.GetTodos;
+using Todos.Applications.Handlers.Queries.GetTodosCount;
 using Xunit.Abstractions;
 
 namespace Todos.UnitTests.Tests.Queries.GetTodosCount;
 
-public class GetTodosCountQueryValidatorTest : ValidatorTestBase<GetTodosCount>
+public class GetTodosCountQueryValidatorTest : ValidatorTestBase<GetTodosCountQuery>
 {
-    public GetTodosQueryValidatorTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    public GetTodosCountQueryValidatorTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
     }
-    protected override IValidator<GetTodosQuery> TestValidator =>
-    TestFixture.Create<GetTodosQueryValidator>();
+    protected override IValidator<GetTodosCountQuery> TestValidator =>
+    TestFixture.Create<GetTodosCountQueryValidator>();
 
     [Theory]
     [FixtureInlineAutoData("")]
@@ -23,7 +24,7 @@ public class GetTodosCountQueryValidatorTest : ValidatorTestBase<GetTodosCount>
     public void Should_BeValid_When_FreeTextIsValid(string freeText)
     {
         // arrange
-        var query = new GetTodosQuery
+        var query = new GetTodosCountQuery
         {
             FreeText = freeText,
         };
@@ -36,7 +37,7 @@ public class GetTodosCountQueryValidatorTest : ValidatorTestBase<GetTodosCount>
     public void Should_NotBeValid_When_FreeTextIsGreatThen50()
     {
         // arrange
-        var query = new GetTodosQuery
+        var query = new GetTodosCountQuery
         {
             FreeText = "123456789012345678901234567890123456789012345678901",
         };
