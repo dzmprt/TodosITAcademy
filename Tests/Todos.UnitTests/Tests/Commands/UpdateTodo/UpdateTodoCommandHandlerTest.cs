@@ -39,7 +39,7 @@ public class UpdateTodoCommandHandlerTest : RequestHandlerTestBase<UpdateTodoCom
         new UpdateTodoCommandHandler(_todosMok.Object, _mapper, _currentServiceMok.Object, _cleanTodosCacheService);
 
     [Theory, FixtureInlineAutoData]
-    public async Task Should_BeValid_When_GetTodosByAdmin(UpdateTodoCommand command, Guid userId)
+    public async Task Should_BeValid_When_UpdateTodosByAdmin(UpdateTodoCommand command, Guid userId)
     {
         // arrange
         _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
@@ -56,7 +56,7 @@ public class UpdateTodoCommandHandlerTest : RequestHandlerTestBase<UpdateTodoCom
     }
     
     [Theory, FixtureInlineAutoData]
-    public async Task Should_BeValid_When_GetTodosByClient(UpdateTodoCommand command, Guid userId)
+    public async Task Should_BeValid_When_UpdateTodosByClient(UpdateTodoCommand command, Guid userId)
     {
         // arrange
         _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
@@ -73,7 +73,7 @@ public class UpdateTodoCommandHandlerTest : RequestHandlerTestBase<UpdateTodoCom
     }
     
     [Theory, FixtureInlineAutoData]
-    public async Task Should_ThrowForbidden_When_GetTodosWithOtherOwnerByClient(UpdateTodoCommand command, Guid userId)
+    public async Task Should_ThrowForbidden_When_UpdateTodosWithOtherOwnerByClient(UpdateTodoCommand command, Guid userId)
     {
         // arrange
         _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
@@ -91,7 +91,7 @@ public class UpdateTodoCommandHandlerTest : RequestHandlerTestBase<UpdateTodoCom
     }
     
     [Theory, FixtureInlineAutoData]
-    public async Task Should_ThrowNotFound_When_TodoNotFound(UpdateTodoCommand command)
+    public async Task Should_ThrowForbidden_When_TodoNotFound(UpdateTodoCommand command)
     {
         // arrange
 
