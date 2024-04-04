@@ -87,7 +87,7 @@ public class UpdateTodoCommandHandlerTest : RequestHandlerTestBase<UpdateTodoCom
         ).ReturnsAsync(todo);
  
         // act and assert
-        await AssertThrowForbiddenFound(command);
+        await AssertThrowForbidden(command);
     }
     
     [Theory, FixtureInlineAutoData]
