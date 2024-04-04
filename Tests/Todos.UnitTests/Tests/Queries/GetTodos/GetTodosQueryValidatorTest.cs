@@ -36,7 +36,7 @@ public class GetTodosQueryValidatorTest: ValidatorTestBase<GetTodosQuery>
     [FixtureInlineAutoData(1)]
     [FixtureInlineAutoData(10)]
     [FixtureInlineAutoData(20)]
-    public void Should_NotValid_When_LimitIsValid(int limit)
+    public void Should_BeValid_When_LimitIsValid(int limit)
     {
         // arrange
         var query = new GetTodosQuery
