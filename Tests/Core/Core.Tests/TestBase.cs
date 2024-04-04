@@ -8,7 +8,10 @@ namespace Core.Tests;
 public abstract class TestBase
 {
     private readonly Lazy<IFixture> _lazyFixture;
-    private readonly ITestOutputHelper _testOutput;
+    private readonly ITestOutputHelper _testOutput;/// <summary>
+    /// /
+    /// </summary>
+    /// <param name="testOutputHelper"></param>
 
     protected TestBase(ITestOutputHelper testOutputHelper)
     {
