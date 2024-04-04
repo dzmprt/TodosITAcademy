@@ -7,9 +7,5 @@ public class ApplicationUserApplicationUserRole
 
     public int ApplicationUserRoleId { get; set; }
 
-
-
-
-
     public ApplicationUserRole Role { get; set; } = default!;
 }
