@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace Todos.UnitTests.Tests.Queries.GetTodos;
 
-public class GetTodosQueryValidatorTest: ValidatorTestBase<GetTodosQuery>
+public class GetTodosQueryValidatorTest : ValidatorTestBase<GetTodosQuery>
 {
     public GetTodosQueryValidatorTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
