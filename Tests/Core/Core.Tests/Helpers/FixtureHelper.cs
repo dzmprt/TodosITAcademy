@@ -1,5 +1,6 @@
 using AutoFixture;
 using AutoFixture.AutoMoq;
+using AutoFixture.Kernel;
 
 namespace Core.Tests.Helpers;
 
@@ -16,6 +17,7 @@ public static class FixtureHelper
             ConfigureMembers = true,
             GenerateDelegates = false
         });
+        fixture.Customizations.Add(new StableFiniteSequenceRelay());
         fixture.Behaviors.Add(new OmitOnRecursionBehavior());
         
         return fixture;
