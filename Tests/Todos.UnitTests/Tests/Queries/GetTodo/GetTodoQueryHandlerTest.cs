@@ -97,4 +97,24 @@ public class GetTodoQueryHandlerTest : RequestHandlerTestBase<GetTodoQuery, GetT
 
         await AssertThrowForbiddenFound(query);
     }
+
+    [Fact]
+    public async Task Should_NotBeValid_When_TodoNotFound()
+    {
+        var guid = Guid.NewGuid();
+        _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(guid);
+        _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Admin)).Returns(false);
+
+        var todo = TestFixture.Build<Todo>().Create();
+
+        todo.OwnerId = GuidHelper.GetNotEqualGiud(guid);
+
+        _todosMok.Setup(
+            p => p.AsAsyncRead().SingleOrDefaultAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default)
+        ).ReturnsAsync(null as Todo);
+
+        var query = new GetTodoQuery();
+
+        await AssertThrowNotFound(query);
+    }
 }
