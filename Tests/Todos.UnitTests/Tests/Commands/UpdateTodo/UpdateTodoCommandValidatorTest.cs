@@ -19,14 +19,32 @@ public class UpdateTodoCommandValidatorTest : ValidatorTestBase<UpdateTodoComman
         TestFixture.Create<UpdateTodoCommandValidator>();
 
     [Theory]
-    [InlineAutoData(1, "123456789-")]
-    [InlineAutoData(5, "123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-")]
-    public void Should_BeValid_When_RequestIsValid(int todoId, string name)
+    [InlineAutoData(1)]
+    [InlineAutoData(5)]
+    [InlineAutoData(10)]
+    public void Should_BeValid_When_TodoIdIsValid(int todoId)
     {
         // arrange
         var query = new UpdateTodoCommand
         {
             TodoId = todoId,
+            Name = "123",
+            IsDone = true,
+        };
+
+        // act & assert
+        AssertValid(query);
+    }
+
+    [Theory]
+    [InlineAutoData("123456789-")]
+    [InlineAutoData("123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-")]
+    public void Should_BeValid_When_NameIsValid(string name)
+    {
+        // arrange
+        var query = new UpdateTodoCommand
+        {
+            TodoId = 1,
             Name = name,
             IsDone = true,
         };
