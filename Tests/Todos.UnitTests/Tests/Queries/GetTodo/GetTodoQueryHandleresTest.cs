@@ -62,6 +62,24 @@ namespace Todos.UnitTests.Tests.Queries.GetTodo
         }
 
         [Fact]
+        public async Task Should_BeValid_When_GetTodoByClient()
+        {
+            // arrange
+            var userId = Guid.NewGuid();
+            _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
+
+            var query = new GetTodoQuery();
+
+            var todo = TestFixture.Build<Todo>().With(t => t.OwnerId, userId).Create();
+            _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Client)).Returns(true);
+            _todosMok.Setup(p => p.AsAsyncRead().SingleOrDefaultAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default))
+                .ReturnsAsync(todo);
+
+            // act and assert
+            await AssertNotThrow(query);
+        }
+
+        [Fact]
         public async Task Should_ThrowForbiddenException_When_GetTodoByClient()
         {
             // arrange
@@ -82,6 +100,22 @@ namespace Todos.UnitTests.Tests.Queries.GetTodo
 
             // act and assert
             await AssertThrowForbiddenFound(query);
+        }
+
+        [Fact]
+        public async Task Should_ThrowNotFoundException_When_TodoNotFound()
+        {
+            // arrange
+            var userId = Guid.NewGuid();
+            _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
+
+            var query = new GetTodoQuery();
+
+            _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Admin)).Returns(true); 
+            _todosMok.Setup(p => p.AsAsyncRead().SingleOrDefaultAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default)).ReturnsAsync((Todo)null); 
+
+            // act and assert
+            await AssertThrowNotFound(query);
         }
 
     }

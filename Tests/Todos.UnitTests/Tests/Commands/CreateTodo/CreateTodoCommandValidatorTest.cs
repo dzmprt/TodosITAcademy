@@ -23,13 +23,15 @@ namespace Todos.UnitTests.Tests.Commands.CreateTodo
             TestFixture.Create<CreateTodoCommandValidator>();
 
 
-        [Fact]
-        public void Should_BeValid_When_NameIsValid()
+        [Theory]
+        [FixtureInlineAutoData("Valid Todo Name")]
+        [FixtureInlineAutoData("12345")]
+        public void Should_BeValid_When_NameIsValid(string name)
         {
             // Arrange
             var command = new CreateTodoCommand
             {
-                Name = "Valid Todo Name"
+                Name = name
             };
 
             // Act & Assert

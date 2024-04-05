@@ -45,7 +45,7 @@ namespace Todos.UnitTests.Tests.Commands.DeleteTodo
             new DeleteTodoCommandHandler(_todosMok.Object, _currentServiceMok.Object, _cleanTodosCacheService);
 
         [Theory, FixtureInlineAutoData]
-        public async Task Should_DeleteTodo_When_TodoExistsAndCurrentUserIsOwner(DeleteTodoCommand command, Guid userId)
+        public async Task Should_NotThrow_When_TodoExistsAndCurrentUserIsOwner(DeleteTodoCommand command, Guid userId)
         {
             // Arrange
             _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
@@ -58,7 +58,7 @@ namespace Todos.UnitTests.Tests.Commands.DeleteTodo
         }
 
         [Theory, FixtureInlineAutoData]
-        public async Task Should_DeleteTodo_When_TodoExistsAndCurrentUserIsAdmin(DeleteTodoCommand command, Guid userId)
+        public async Task Should_NotThrow_When_TodoExistsAndCurrentUserIsAdmin(DeleteTodoCommand command, Guid userId)
         {
             // Arrange
             _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
@@ -72,13 +72,14 @@ namespace Todos.UnitTests.Tests.Commands.DeleteTodo
         }
 
         [Theory, FixtureInlineAutoData]
-        public async Task Should_ThrowForbidden_When_TodoExistsAndCurrentUserIsNotOwnerNorAdmin(DeleteTodoCommand command, Guid userId)
+        public async Task Should_ThrowForbidden_When_TodoExistsAndCurrentUserIsNotOwnerAndNotAdmin(DeleteTodoCommand command, Guid userId)
         {
             // Arrange
             _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
             var todo = new Todo { OwnerId = Guid.NewGuid() };
             _todosMok.Setup(p => p.AsAsyncRead().SingleOrDefaultAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default))
                 .ReturnsAsync(todo);
+            _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Admin)).Returns(false);
 
             // Act & Assert
             await AssertThrowForbiddenFound(command);

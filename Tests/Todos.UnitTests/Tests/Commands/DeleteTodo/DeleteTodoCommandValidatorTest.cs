@@ -25,7 +25,7 @@ namespace Todos.UnitTests.Tests.Commands.DeleteTodo
         [Theory]
         [FixtureInlineAutoData(0)]
         [FixtureInlineAutoData(-1)]
-        public void Should_NotBeValid_When_TodoIdIsNotPositive(int todoId)
+        public void Should_NotBeValid_When_TodoIdIsNotPositiveOrZero(int todoId)
         {
             // Arrange
             var command = new DeleteTodoCommand
