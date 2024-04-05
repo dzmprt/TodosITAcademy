@@ -78,7 +78,7 @@ public class GetTodoQueryHandlerTest : RequestHandlerTestBase<GetTodoQuery, GetT
 
 
     [Fact]
-    public async Task Should_BeInvalid_When_GetTodoByClient()
+    public async Task Should_ThrowForbidden_When_GetTodoByClient()
     {
         // arrange
         var userId = Guid.NewGuid();

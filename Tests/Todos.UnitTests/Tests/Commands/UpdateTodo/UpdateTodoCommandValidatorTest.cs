@@ -36,15 +36,31 @@ public class UpdateTodoCommandValidatorTest : ValidatorTestBase<UpdateTodoComman
     }
 
     [Theory]
-    [FixtureInlineAutoData(-1, "")]
-    [FixtureInlineAutoData(1, "")]
-    [FixtureInlineAutoData(1, "123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-1")]
-    public void Should_NotValid_When_RequestIsInvalid(int todoId, string name)
+    [FixtureInlineAutoData(0)]
+    [FixtureInlineAutoData(-1)]
+    public void Should_NotValid_When_TodoIdIsInvalid(int todoId)
     {
         // arrange
         var query = new UpdateTodoCommand
         {
             TodoId = todoId,
+            Name = "123",
+            IsDone = true,
+        };
+
+        // act & assert
+        AssertNotValid(query);
+    }
+
+    [Theory]
+    [FixtureInlineAutoData("")]
+    [FixtureInlineAutoData("123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-1")]
+    public void Should_NotValid_When_NameIsInvalid(string name)
+    {
+        // arrange
+        var query = new UpdateTodoCommand
+        {
+            TodoId = 1,
             Name = name,
             IsDone = true,
         };
@@ -52,4 +68,5 @@ public class UpdateTodoCommandValidatorTest : ValidatorTestBase<UpdateTodoComman
         // act & assert
         AssertNotValid(query);
     }
+
 }
