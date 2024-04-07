@@ -9,6 +9,7 @@ public abstract class TestBase
 {
     private readonly Lazy<IFixture> _lazyFixture;
     private readonly ITestOutputHelper _testOutput;
+    //comment
 
     protected TestBase(ITestOutputHelper testOutputHelper)
     {
