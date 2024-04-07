@@ -28,7 +28,16 @@ namespace Infrastructure.Persistence.Migrations
                     { "2b4945ab-97a7-49c8-098b-08dc5356fbaa", 1 },
                     { "17593112-cd8d-4c96-893b-f53c8cc31cda", 1 }
                 });
-            
+
+            migrationBuilder.InsertData(
+                table: "RefreshTokens",
+                columns: new[] { "RefreshTokenId", "ApplicationUserId", "Expired" },
+                values: new object[,]
+                {
+                    { "35f37340-f9e5-4118-b949-08dc51cc57b7","35F37340-F9E5-4118-B949-08DC51CC57B7", DateTime.UtcNow.AddDays(1) }
+                });
+
+
             migrationBuilder.InsertData(
                 table: "Todos",
                 columns: new[] { "Name", "IsDone", "CreatedDate", "OwnerId"},
