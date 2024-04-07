@@ -1,29 +1,30 @@
+﻿using Microsoft.AspNetCore.Mvc.Testing;
+using Core.Tests;
+using Xunit;
+using Core.Tests.Attributes;
+using Microsoft.AspNetCore.WebUtilities;
 using System.Net;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
-using Core.Tests.Attributes;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.WebUtilities;
-using Users.Application.Dtos;
-using Users.Application.Handlers.Commands.CreateUser;
-using Users.Application.Handlers.Commands.DeleteUser;
-using Users.Application.Handlers.Commands.UpdateUser;
-using Users.Application.Handlers.Commands.UpdateUserPassword;
-using Users.Application.Handlers.Queries.GetUser;
-using Core.Tests;
+using System.Text;
+using Todos.Applications.Handlers.Commands.CreateTodo;
+using Todos.Applications.DTOs;
+using Todos.Applications.Handlers.Queries.GetTodo;
+using Todos.Applications.Handlers.Commands.UpdateTodo;
+using Todos.Applications.Handlers.Commands.DeleteTodo;
+using Todos.Applications.Handlers.Commands.UpdateTodoIsDone;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace Users.FunctionalTests;
+namespace Todos.FunctionalTests;
 
-public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
+public class TodosApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
 
     private const string adminToken =
         "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjM1ZjM3MzQwLWY5ZTUtNDExOC1iOTQ5LTA4ZGM1MWNjNTdiNyIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzQyMjUyMTc4LCJpc3MiOiJUb2RvcyIsImF1ZCI6IlRvZG9zIn0.Cs2O0VLJFtq_jEsT4DPzhIkjRhfwi9SJsW5ojMJd4Ps";
 
-    public UsersApiTests(CustomWebApplicationFactory<Program> factory)
+    public TodosApiTests(CustomWebApplicationFactory<Program> factory)
     {
         _factory = factory;
     }
@@ -35,7 +36,7 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
     [FixtureInlineAutoData(null, 1)]
     [FixtureInlineAutoData(1, null)]
     [FixtureInlineAutoData(1, 1)]
-    public async Task Get_Users_ReturnSuccessAndCorrectContentType(int? limit, int? offset)
+    public async Task Get_Todos_ReturnSuccessAndCorrectContentType(int? limit, int? offset)
     {
         // Arrange
         var client = _factory.CreateClient();
@@ -48,7 +49,7 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
 
         // Act
         using (var requestMessage =
-               new HttpRequestMessage(HttpMethod.Get, QueryHelpers.AddQueryString("/UM/api/v1/Users", query)))
+               new HttpRequestMessage(HttpMethod.Get, QueryHelpers.AddQueryString("/api/v1/Todos", query)))
         {
             requestMessage.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", adminToken);
@@ -63,19 +64,19 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
     }
 
     [Fact]
-    public async Task Get_UserById_ReturnSuccessAndCorrectContentTypeWithId()
+    public async Task Get_TodoById_ReturnSuccessAndCorrectContentTypeWithId()
     {
         // Arrange
         var client = _factory.CreateClient();
 
-        var query = new GetUserQuery()
+        var query = new GetTodoQuery()
         {
-            Id = "17593112-CD8D-4C96-893B-F53C8CC31CDA"
+            TodoId = 5
         };
 
         // Act
         using (var requestMessage =
-               new HttpRequestMessage(HttpMethod.Get, "/UM/api/v1/Users/" + query.Id))
+               new HttpRequestMessage(HttpMethod.Get, "/api/v1/Todos/" + query.TodoId))
         {
             requestMessage.Content =
                 new StringContent(JsonSerializer.Serialize(query), Encoding.UTF8, "application/json");
@@ -86,31 +87,31 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
             var response = await client.SendAsync(requestMessage);
 
             var responseJson = await response.Content.ReadAsStringAsync();
-            var responseObject = JsonSerializer.Deserialize<GetUserDto>(responseJson,
+            var responseObject = JsonSerializer.Deserialize<GetTodoDto>(responseJson,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
-            Assert.Equal(query.Id, responseObject!.ApplicationUserId.ToString(), true);
+            Assert.Equal(query.TodoId, responseObject!.TodoId);
             Assert.Equal("application/json; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
         }
     }
 
     [Fact]
-    public async Task Get_UsersCount_ReturnSuccessAndCorrectContentType()
+    public async Task Get_TodosCount_ReturnSuccessAndCorrectContentType()
     {
         // Arrange
         var client = _factory.CreateClient();
 
         var query = new Dictionary<string, string?>
         {
-            ["FreeText"] = "Client"
+            ["FreeText"] = "todo"
         };
 
         // Act
         using (var requestMessage =
-               new HttpRequestMessage(HttpMethod.Get, QueryHelpers.AddQueryString("/UM/api/v1/Users/Count", query)))
+               new HttpRequestMessage(HttpMethod.Get, QueryHelpers.AddQueryString("/api/v1/Todos/Count", query)))
         {
             requestMessage.Content =
                 new StringContent(JsonSerializer.Serialize(query), Encoding.UTF8, "application/json");
@@ -131,51 +132,54 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
     #region Commands
 
     [Fact]
-    public async Task Create_User_ReturnCreatedAndCorrectContentType()
+    public async Task Create_Todo_ReturnCreatedAndCorrectContentTypeWithName()
     {
         // Arrange
-        var command = new CreateUserCommand()
+        var command = new CreateTodoCommand()
         {
-            Login = "Login",
-            Password = "12345678"
+            Name = "Todo name test"
         };
         var client = _factory.CreateClient();
 
         // Act
-        using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/UM/api/v1/Users"))
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/api/v1/Todos"))
         {
             requestMessage.Content =
                 new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
 
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+
             var response = await client.SendAsync(requestMessage);
 
             var responseJson = await response.Content.ReadAsStringAsync();
-            var responseObject = JsonSerializer.Deserialize<GetUserDto>(responseJson,
+            var responseObject = JsonSerializer.Deserialize<GetTodoDto>(responseJson,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             // Assert
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-            Assert.Equal(responseObject!.Login, command.Login);
+            Assert.Equal(responseObject!.Name, command.Name);
             Assert.Equal("application/json; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
         }
     }
 
     [Fact]
-    public async Task Put_User_ReturnSuccessAndCorrectContentTypeWithNewLogin()
+    public async Task Put_Todo_ReturnSuccessAndCorrectContentTypeWithNewName()
     {
         // Arrange
         var client = _factory.CreateClient();
 
-        var command = new UpdateUserCommand()
+        var command = new UpdateTodoCommand()
         {
-            Id = "17593112-CD8D-4C96-893B-F53C8CC31CDA",
-            Login = "NewLoginTest"
+            TodoId = 5,
+            Name = "New todo name test",
+            IsDone = true
         };
 
         // Act
         using (var requestMessage =
-               new HttpRequestMessage(HttpMethod.Put, "/UM/api/v1/Users/" + command.Id))
+               new HttpRequestMessage(HttpMethod.Put, "/api/v1/Todos/" + command.TodoId))
         {
             requestMessage.Content =
                 new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
@@ -186,33 +190,33 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
             var response = await client.SendAsync(requestMessage);
 
             var responseJson = await response.Content.ReadAsStringAsync();
-            var responseObject = JsonSerializer.Deserialize<GetUserDto>(responseJson,
+            var responseObject = JsonSerializer.Deserialize<GetTodoDto>(responseJson,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
-            Assert.Equal(command.Id, responseObject!.ApplicationUserId.ToString(), true);
-            Assert.Equal(command.Login, responseObject!.Login);
+            Assert.Equal(command.TodoId, responseObject!.TodoId);
+            Assert.Equal(command.Name, responseObject!.Name);
             Assert.Equal("application/json; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
         }
     }
 
     [Fact]
-    public async Task Patch_UserPassword_ReturnStatusCode200()
+    public async Task Patch_TodosIsDone_ReturnSuccessAndCorrectContentType()
     {
         // Arrange
         var client = _factory.CreateClient();
 
-        var command = new UpdateUserPasswordCommand()
+        var command = new UpdateTodoIsDoneCommand()
         {
-            UserId = "17593112-CD8D-4C96-893B-F53C8CC31CDA",
-            Password = "NewPasswordTest"
+            TodoId = 5,
+            IsDone = true
         };
 
         // Act
         using (var requestMessage =
-               new HttpRequestMessage(HttpMethod.Patch, $"/UM/api/v1/Users/{command.UserId}/Password"))
+               new HttpRequestMessage(HttpMethod.Patch, $"/api/v1/Todos/{command.TodoId}/IsDone"))
         {
             requestMessage.Content =
                 new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
@@ -223,24 +227,26 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
             var response = await client.SendAsync(requestMessage);
 
             // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            Assert.Equal("application/json; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
         }
     }
 
     [Fact]
-    public async Task Delete_User_ReturnStatusCode200()
+    public async Task Delete_Todo_ReturnStatusCode200()
     {
         // Arrange
         var client = _factory.CreateClient();
 
-        var command = new DeleteUserCommand()
+        var command = new DeleteTodoCommand()
         {
-            Id = "17593112-CD8D-4C96-893B-F53C8CC31CDA"
+            TodoId = 6
         };
 
         // Act
         using (var requestMessage =
-               new HttpRequestMessage(HttpMethod.Delete, "/UM/api/v1/Users/" + command.Id))
+               new HttpRequestMessage(HttpMethod.Delete, "/api/v1/Todos/" + command.TodoId))
         {
             requestMessage.Content =
                 new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
