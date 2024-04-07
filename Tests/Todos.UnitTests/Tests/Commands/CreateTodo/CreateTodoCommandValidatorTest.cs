@@ -18,46 +18,30 @@ namespace Todos.UnitTests.Tests.Commands.CreateTodo
         }
 
         protected override FluentValidation.IValidator<CreateTodoCommand> TestValidator => TestFixture.Create<CreateTodoCommandValidator>();
-        [Fact]
-        public void Should_BeValid_When_RequestIsValid()
+        [Theory]
+        [InlineData("test")]
+        [InlineData("1")]
+        [InlineData("12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890")]
+        public void Should_BeValid_When_RequestIsValid(string name)
         {
             // arrange
             var create = new CreateTodoCommand
             {
-                Name = "Test"
+                Name = name
             };
             // act & assert
             AssertValid(create);
         }
-        [Fact]
-        public void Should_Valid_With_Valid_OneChatTodoName()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901")]
+        public void Should_BeNotValid_When_RequestNotValid(string? name)
         {
             // arrange
             var create = new CreateTodoCommand
             {
-                Name = "1",
-            };
-            // act & assert
-            AssertValid(create);
-        }
-        [Fact]
-        public void Should_Valid_With_Valid_200ChatTodoName()
-        {
-            // arrange
-            var create = new CreateTodoCommand
-            {
-                Name = new string('1', 200)
-            };
-            // act & assert
-            AssertValid(create);
-        }
-        [Fact]
-        public void Should_NotValid_With_NotValid_201ChatTodoName()
-        {
-            // arrange
-            var create = new CreateTodoCommand
-            {
-                Name = new string('1', 201)
+                Name = name
             };
             // act & assert
             AssertNotValid(create);

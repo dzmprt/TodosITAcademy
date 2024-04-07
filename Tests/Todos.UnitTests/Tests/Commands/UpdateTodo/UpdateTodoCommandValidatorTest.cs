@@ -34,13 +34,16 @@ namespace Todos.UnitTests.Tests.Commands.UpdateTodo
         [Theory]
         [InlineData(-1)]
         [InlineData(0)]
-        public void Should_NotBeValid_When_TodoIdIsNotValid(int todoId)
+        [InlineData(int.MinValue)]
+        
+        
+        public void Should_NotBeValid_When_RequestIsNotValid(int todoId)
         {
             // arrange
             var update = new UpdateTodoCommand
             {
                 IsDone = true,
-                Name = "1234",
+                Name = "111",
                 TodoId = todoId
             };
             // act & assert
@@ -52,13 +55,13 @@ namespace Todos.UnitTests.Tests.Commands.UpdateTodo
         [InlineData(null)]
         [InlineData("")]
         [InlineData("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901")]
-        public void Should_NotBeValid_When_NameIsNotValid(string name)
+        public void Should_NotBeValid_When_NameIsNotValid(string? name)
         {
             // arrange
             var update = new UpdateTodoCommand
             {
                 IsDone = true,
-                Name = new string('1', 201),
+                Name = name,
                 TodoId = 1
             };
             // act & assert

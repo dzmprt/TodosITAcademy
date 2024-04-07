@@ -79,7 +79,7 @@ namespace Todos.UnitTests.Tests.Commands.DeleteTodo
         }
 
         [Theory, FixtureInlineAutoData]
-        public async Task Should_NotFound_When_DeletingTodo_NotExists(DeleteTodoCommand command)
+        public async Task Should_Throw_NotFound_When_DeletingTodo_NotExists(DeleteTodoCommand command)
         {
 
             // arrange
@@ -95,7 +95,7 @@ namespace Todos.UnitTests.Tests.Commands.DeleteTodo
         }
 
         [Theory, FixtureInlineAutoData]
-        public async Task Should_Forbidden_When_DeleteTodoByOtherUser(DeleteTodoCommand command, Guid userId)
+        public async Task Should_Throw_Forbidden_When_DeleteTodoByOtherUser(DeleteTodoCommand command, Guid userId)
         {
 
             // arrange

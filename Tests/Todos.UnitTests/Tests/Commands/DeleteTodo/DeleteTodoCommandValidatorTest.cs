@@ -19,20 +19,25 @@ namespace Todos.UnitTests.Tests.Commands.DeleteTodo
 
         protected override FluentValidation.IValidator<DeleteTodoCommand> TestValidator => TestFixture.Create<DeleteTodoCommandValidator>();
 
-        [Fact]
-        public void Should_BeValid_When_Id_Great_Then_Zero()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(int.MaxValue)]
+        public void Should_BeValid_When_Id_Valid(int id)
         {
             // arrange
             var create = new DeleteTodoCommand
             {
-                TodoId = 1
+                TodoId = id
             };
             // act & assert
             AssertValid(create);
         }
 
-        [Fact]
-        public void Should_NotValid_When_Id_Is_Zero()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        [InlineData(int.MinValue)]
+        public void Should_NotValid_When_Id_NotValid(int id)
         {
             // arrange
             var create = new DeleteTodoCommand
