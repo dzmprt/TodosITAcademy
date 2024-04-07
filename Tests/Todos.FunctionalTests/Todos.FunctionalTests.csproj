@@ -24,13 +24,13 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<Using Include="Xunit"/>
+		<Using Include="Xunit" />
 	</ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Apis\Todos.Api\Todos.Api.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.Persistence\Infrastructure.Persistence.csproj" />
-    <ProjectReference Include="..\Tests\Core\Core.Tests\Core.Tests.csproj" />
+	<ProjectReference Include="..\..\Apis\Todos.Api\Todos.Api.csproj" />
+	<ProjectReference Include="..\..\Infrastructure\Infrastructure.Persistence\Infrastructure.Persistence.csproj" />
+    <ProjectReference Include="..\Core\Core.Tests\Core.Tests.csproj" />
   </ItemGroup>
 
 </Project>

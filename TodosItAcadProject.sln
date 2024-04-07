@@ -67,9 +67,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functional", "Functional", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Users.FunctionalTests", "Tests\Users.FunctionalTests\Users.FunctionalTests.csproj", "{9AE4A37C-CC3B-45AD-8E9B-3BC548F27190}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todos.FunctionalTests", "Todos.FunctionalTests\Todos.FunctionalTests.csproj", "{3615B9BA-F072-4DD5-9238-3A862BB35B82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todos.FunctionalTests", "Tests\Todos.FunctionalTests\Todos.FunctionalTests.csproj", "{3615B9BA-F072-4DD5-9238-3A862BB35B82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.FunctionalTests", "Auth.FunctionalTests\Auth.FunctionalTests.csproj", "{316041D4-9C37-4379-9555-E67F8C2CB805}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.FunctionalTests", "Tests\Auth.FunctionalTests\Auth.FunctionalTests.csproj", "{316041D4-9C37-4379-9555-E67F8C2CB805}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
