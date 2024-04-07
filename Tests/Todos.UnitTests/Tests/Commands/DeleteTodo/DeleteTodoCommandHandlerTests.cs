@@ -83,7 +83,7 @@ namespace Todos.UnitTests.Tests.Commands.DeleteTodo
         }
 
         [Theory, FixtureInlineAutoData]
-        public async Task Should_ThrowForbidden_When_TodoNotFound(DeleteTodoCommand command)
+        public async Task Should_ThrowNotFound_When_TodoNotFound(DeleteTodoCommand command)
         {
             // arrange
 

@@ -19,7 +19,7 @@ namespace Todos.UnitTests.Tests.Commands.CreateTodo
         [Theory]
         [FixtureInlineAutoData(1)]
         [FixtureInlineAutoData(200)]
-        public void Should_BeValid_When_RequestIsValid(int countLetters)
+        public void Should_BeValid_When_NameIsValid(int countLetters)
         {
             // arrange
             var query = new CreateTodoCommand()
@@ -35,7 +35,7 @@ namespace Todos.UnitTests.Tests.Commands.CreateTodo
         [Theory]
         [FixtureInlineAutoData(0)]
         [FixtureInlineAutoData(201)]
-        public void Should_NotValid_When_RequesIsNotValid(int countLetters)
+        public void Should_NotValid_When_NameIsNotValid(int countLetters)
         {
             // arrange
             var query = new CreateTodoCommand()

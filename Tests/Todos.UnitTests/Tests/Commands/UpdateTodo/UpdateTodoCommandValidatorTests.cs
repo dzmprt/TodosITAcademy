@@ -16,18 +16,30 @@ namespace Todos.UnitTests.Tests.Commands.UpdateTodo
             TestFixture.Create<UpdateTodoCommandValidator>();
 
         [Theory]
-        [FixtureInlineAutoData(1, 1)]
-        [FixtureInlineAutoData(1, 200)]
-        [FixtureInlineAutoData(int.MaxValue, 1)]
-        [FixtureInlineAutoData(int.MaxValue, 200)]
-        public void Should_BeValid_When_RequestIsValid(int id, int countLetters)
+        [FixtureInlineAutoData(1)]
+        [FixtureInlineAutoData(200)]
+        public void Should_BeValid_When_NameIsValid(int countLetters)
         {
             // arrange
             var query = new UpdateTodoCommand()
             {
-                Name = new string('t',countLetters),
+                TodoId = 1,
+                Name = new string('T',countLetters),
+            };
+
+            // act & assert
+            AssertValid(query);
+        } 
+        [Theory]
+        [FixtureInlineAutoData(1)]
+        [FixtureInlineAutoData(int.MaxValue)]
+        public void Should_BeValid_When_TodoIdIsValid(int id)
+        {
+            // arrange
+            var query = new UpdateTodoCommand()
+            {
+                Name = new string('T', 200),
                 TodoId = id
-                
             };
 
             // act & assert
@@ -35,17 +47,30 @@ namespace Todos.UnitTests.Tests.Commands.UpdateTodo
         }
 
         [Theory]
-        [FixtureInlineAutoData(0,0)]
-        [FixtureInlineAutoData(0,201)]
-        [FixtureInlineAutoData(-1,0)]
-        [FixtureInlineAutoData(-1,201)]
-        public void Should_NotValid_When_RequesIsNotValid(int id, int countLetters)
+        [FixtureInlineAutoData(0)]
+        [FixtureInlineAutoData(201)]
+        public void Should_NotValid_When_NameIsNotValid(int countLetters)
         {
             // arrange
             var query = new UpdateTodoCommand()
             {
                 Name = countLetters == 0 ? string.Empty :new string('t', countLetters),
-                TodoId=id
+                
+            };
+
+            // act & assert
+            AssertNotValid(query);
+        }
+        [Theory]
+        [FixtureInlineAutoData(0)]
+        [FixtureInlineAutoData(-1)]
+        public void Should_NotValid_When_TodoIdIsNotValid(int id)
+        {
+            // arrange
+            var query = new UpdateTodoCommand()
+            {
+                Name = new string('T', 200),
+                TodoId =id
             };
 
             // act & assert

@@ -78,7 +78,8 @@ namespace Todos.UnitTests.Tests.Commands.UpdateTodoIsDone
         {
             // arrange
             _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
-            _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Client)).Returns(true);
+            // checking what user not admin
+            _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Admin)).Returns(false);
 
             var todo = TestFixture.Build<Todo>().Create();
             todo.OwnerId = GuidHelper.GetNotEqualGiud(userId);
@@ -92,7 +93,7 @@ namespace Todos.UnitTests.Tests.Commands.UpdateTodoIsDone
         }
 
         [Theory, FixtureInlineAutoData]
-        public async Task Should_ThrowForbidden_When_TodoNotFound(UpdateTodoIsDoneCommand command)
+        public async Task Should_ThrowNotFound_When_TodoNotFound(UpdateTodoIsDoneCommand command)
         {
             // arrange
 

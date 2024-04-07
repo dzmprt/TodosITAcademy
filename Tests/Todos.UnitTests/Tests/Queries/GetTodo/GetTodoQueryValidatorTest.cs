@@ -19,7 +19,7 @@ namespace Todos.UnitTests.Tests.Queries.GetTodo
         [Theory]
         [FixtureInlineAutoData(1)]
         [FixtureInlineAutoData(int.MaxValue)]
-        public void Should_BeValid_When_RequestIsValid(int todoId)
+        public void Should_BeValid_When_TodoIdIsValid(int todoId)
         {
             // arrange
             var query = new GetTodoQuery()
@@ -34,7 +34,7 @@ namespace Todos.UnitTests.Tests.Queries.GetTodo
         [Theory]
         [FixtureInlineAutoData(0)]
         [FixtureInlineAutoData(-1)]
-        public void Should_NotValid_When_RequesIsNotValid(int todoId)
+        public void Should_NotValid_When_TodoIdIsNotValid(int todoId)
         {
             // arrange
             var query = new GetTodoQuery()
