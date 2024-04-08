@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Using Include="Xunit"/>
+        <Using Include="Xunit" />
     </ItemGroup>
 
     <ItemGroup>
@@ -33,7 +33,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Tests\Commands\" />
+      <Folder Include="Tests\Queries\GetTodoCount\" />
     </ItemGroup>
 
 </Project>
