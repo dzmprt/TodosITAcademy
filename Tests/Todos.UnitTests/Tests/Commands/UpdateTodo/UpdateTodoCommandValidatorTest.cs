@@ -27,6 +27,7 @@ namespace Todos.UnitTests.Tests.Commands.UpdateTodo
                 Name = name,
                 TodoId = id,
             };
+
             // act & assert
             AssertValid(update);
         }
@@ -46,6 +47,7 @@ namespace Todos.UnitTests.Tests.Commands.UpdateTodo
                 Name = "111",
                 TodoId = todoId
             };
+
             // act & assert
             AssertNotValid(update);
         }
@@ -64,6 +66,7 @@ namespace Todos.UnitTests.Tests.Commands.UpdateTodo
                 Name = name,
                 TodoId = 1
             };
+
             // act & assert
             AssertNotValid(update);
         }

@@ -29,6 +29,7 @@ namespace Todos.UnitTests.Tests.Commands.DeleteTodo
             {
                 TodoId = id
             };
+
             // act & assert
             AssertValid(create);
         }
@@ -44,6 +45,7 @@ namespace Todos.UnitTests.Tests.Commands.DeleteTodo
             {
                 TodoId = 0
             };
+
             // act & assert
             AssertNotValid(create);
         }

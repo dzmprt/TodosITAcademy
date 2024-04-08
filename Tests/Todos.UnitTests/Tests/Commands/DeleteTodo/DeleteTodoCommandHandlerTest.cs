@@ -42,10 +42,8 @@ namespace Todos.UnitTests.Tests.Commands.DeleteTodo
         {
 
             // arrange
-
             _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
             _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Admin)).Returns(true);
-
             var todo = TestFixture.Build<Todo>().Create();
             todo.OwnerId = GuidHelper.GetNotEqualGiud(userId);
             todo.TodoId = command.TodoId;
@@ -60,15 +58,11 @@ namespace Todos.UnitTests.Tests.Commands.DeleteTodo
         [Theory, FixtureInlineAutoData]
         public async Task Should_BeValid_When_DeleteTodoByOwner(DeleteTodoCommand command, Guid userId)
         {
-
             // arrange
-
             _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
             _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Client)).Returns(true);
-
             var todo = TestFixture.Build<Todo>().Create();
             todo.OwnerId = userId;
-            //todo.OwnerId = GuidHelper.GetNotEqualGiud(userId);
             todo.TodoId = command.TodoId;
             _todosMok.Setup(
                 p => p.AsAsyncRead().SingleOrDefaultAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default)
@@ -81,11 +75,8 @@ namespace Todos.UnitTests.Tests.Commands.DeleteTodo
         [Theory, FixtureInlineAutoData]
         public async Task Should_Throw_NotFound_When_DeletingTodo_NotExists(DeleteTodoCommand command)
         {
-
             // arrange
-
             Todo? todo = null;
-
             _todosMok.Setup(
                 p => p.AsAsyncRead().SingleOrDefaultAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default)
             ).ReturnsAsync(todo);
@@ -97,12 +88,9 @@ namespace Todos.UnitTests.Tests.Commands.DeleteTodo
         [Theory, FixtureInlineAutoData]
         public async Task Should_Throw_Forbidden_When_DeleteTodoByOtherUser(DeleteTodoCommand command, Guid userId)
         {
-
             // arrange
-
             _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
             _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Client)).Returns(true);
-
             var todo = TestFixture.Build<Todo>().Create();
             todo.OwnerId = GuidHelper.GetNotEqualGiud(userId);
             todo.TodoId = command.TodoId;

@@ -70,20 +70,15 @@ public class GetTodosQueryHandlerTest : RequestHandlerTestBase<GetTodosQuery, Ba
         // arrange
         var userId = Guid.NewGuid();
         _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
-        
         var query = new GetTodosQuery();
-
         var todos = TestFixture.Build<Todo>().CreateMany(10).ToArray();
         var count = todos.Length;
-
         _currentServiceMok.Setup(
                 p => p.UserInRole(ApplicationUserRolesEnum.Admin))
             .Returns(false);
-
         _todosMok.Setup(
             p => p.AsAsyncRead().ToArrayAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default)
         ).ReturnsAsync(todos);
-        
         _todosMok.Setup(
             p => p.AsAsyncRead().CountAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default)
         ).ReturnsAsync(count);

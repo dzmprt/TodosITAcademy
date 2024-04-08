@@ -29,6 +29,7 @@ namespace Todos.UnitTests.Tests.Commands.UpdateTodoIsDone
                 IsDone = true,
                 TodoId = 1,
             };
+
             // act & assert
             AssertValid(update);
         }
@@ -42,6 +43,7 @@ namespace Todos.UnitTests.Tests.Commands.UpdateTodoIsDone
                 IsDone = true,
                 TodoId = 0
             };
+
             // act & assert
             AssertNotValid(update);
         }

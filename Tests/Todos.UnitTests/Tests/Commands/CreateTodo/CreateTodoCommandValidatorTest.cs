@@ -29,6 +29,7 @@ namespace Todos.UnitTests.Tests.Commands.CreateTodo
             {
                 Name = name
             };
+
             // act & assert
             AssertValid(create);
         }
@@ -43,6 +44,7 @@ namespace Todos.UnitTests.Tests.Commands.CreateTodo
             {
                 Name = name
             };
+
             // act & assert
             AssertNotValid(create);
         }

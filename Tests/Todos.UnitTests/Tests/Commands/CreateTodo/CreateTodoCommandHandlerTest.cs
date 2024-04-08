@@ -49,8 +49,8 @@ namespace Todos.UnitTests.Tests.Commands.CreateTodo
         {
             // arrange
             _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
-
             var todo = TestFixture.Build<Todo>().Create();
+
             // act and assert
             await AssertNotThrow(command);
         }

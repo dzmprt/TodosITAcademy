@@ -51,7 +51,6 @@ namespace Todos.UnitTests.Tests.Queries.GetTodo
             // arrange
             _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
             _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Admin)).Returns(true);
-
             var todo = TestFixture.Build<Todo>().Create();
             todo.OwnerId = userId;
             todo.TodoId = command.TodoId;
@@ -69,7 +68,6 @@ namespace Todos.UnitTests.Tests.Queries.GetTodo
             // arrange
             _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
             _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Client)).Returns(true);
-
             var todo = TestFixture.Build<Todo>().Create();
             todo.OwnerId = userId;
             todo.TodoId = command.TodoId;
@@ -87,7 +85,6 @@ namespace Todos.UnitTests.Tests.Queries.GetTodo
             // arrange
             _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
             _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Client)).Returns(true);
-
             var todo = TestFixture.Build<Todo>().Create();
             todo.OwnerId = GuidHelper.GetNotEqualGiud(userId);
             todo.TodoId = command.TodoId;
@@ -106,7 +103,6 @@ namespace Todos.UnitTests.Tests.Queries.GetTodo
             // arrange
             _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
             _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Client)).Returns(true);
-
             Todo? todo = null;
             _todosMok.Setup(
                 p => p.AsAsyncRead().SingleOrDefaultAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default)
