@@ -1,6 +1,7 @@
 using System.Data.Common;
 using Core.Application.Abstractions.Persistence;
 using Core.Tests;
+using FluentAssertions.Common;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -26,8 +27,10 @@ public class CustomWebApplicationFactory<TProgram>
 
             services.AddDbContext<DbContext, ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(
-                    "Server=.;database=TodosTests;Integrated Security=False;User Id=sa;Password=0bd7903b-f568-4894-8d72-3c1b507e5644;MultipleActiveResultSets=True;Trust Server Certificate=true;");
+                //options.UseSqlServer(
+                //    "Server=.;database=TodosTests;Integrated Security=False;User Id=sa;Password=0bd7903b-f568-4894-8d72-3c1b507e5644;MultipleActiveResultSets=True;Trust Server Certificate=true;");
+                options.UseNpgsql(
+                    "User ID=postgres;Password=1;Host=localhost;Port=5432;Database=TodoTestDb;Pooling=false;");
             });
         });
         

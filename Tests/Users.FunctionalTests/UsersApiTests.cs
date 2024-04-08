@@ -1,3 +1,4 @@
+using System.ComponentModel.Design;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
@@ -7,6 +8,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.WebUtilities;
 using Users.Application.Dtos;
 using Users.Application.Handlers.Commands.CreateUser;
+using Users.Application.Handlers.Commands.DeleteUser;
+using Users.Application.Handlers.Commands.UpdateUser;
+using Users.Application.Handlers.Commands.UpdateUserPassword;
+using Users.Application.Handlers.Queries.GetUser;
+using Users.Application.Handlers.Queries.GetUsersCount;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Users.FunctionalTests;
@@ -15,8 +21,17 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
 
+    /*
+{
+  "jwtToken": "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiVGVzdENsaWVudDEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjE3NTkzMTEyLWNkOGQtNGM5Ni04OTNiLWY1M2M4Y2MzMWNkYSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkNsaWVudCIsImV4cCI6MTc0MjU5OTMzNiwiaXNzIjoiVG9kb3MiLCJhdWQiOiJUb2RvcyJ9.-_p-dqK_yPvr3WycFdCDgT1VjOOEDCGrEb4Q2gicckg",
+  "refreshToken": "17593112-cd8d-4c96-893b-f53c8cc31cda",
+  "expires": "2025-03-21T23:22:16.809713Z"
+}     
+     
+     */
+
     private const string adminToken =
-        "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjM1ZjM3MzQwLWY5ZTUtNDExOC1iOTQ5LTA4ZGM1MWNjNTdiNyIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzQyMjUyMTc4LCJpc3MiOiJUb2RvcyIsImF1ZCI6IlRvZG9zIn0.Cs2O0VLJFtq_jEsT4DPzhIkjRhfwi9SJsW5ojMJd4Ps";
+        "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiVGVzdENsaWVudDEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjE3NTkzMTEyLWNkOGQtNGM5Ni04OTNiLWY1M2M4Y2MzMWNkYSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkNsaWVudCIsImV4cCI6MTc0MjU5OTMzNiwiaXNzIjoiVG9kb3MiLCJhdWQiOiJUb2RvcyJ9.-_p-dqK_yPvr3WycFdCDgT1VjOOEDCGrEb4Q2gicckg";
 
     public UsersApiTests(CustomWebApplicationFactory<Program> factory)
     {
@@ -56,13 +71,70 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
     }
 
     [Fact]
-    public async Task Create_User_ReturnCreatedAndCorrectContentType()
+    public async Task Get_User_ReturnSuccessAndCorrectContentType()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var query = new GetUserQuery
+        {
+            Id = "17593112-cd8d-4c96-893b-f53c8cc31cda"
+        };
+
+        // Act
+        using (var requestMessage =
+               new HttpRequestMessage(HttpMethod.Get, $"/UM/api/v1/Users/{query.Id}"))
+        {
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+            var response = await client.SendAsync(requestMessage);
+
+            // Assert
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            Assert.Equal("application/json; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
+        }
+    }
+
+    [Theory]
+    [FixtureInlineAutoData("TestClient1", 1)]
+//    [FixtureInlineAutoData("TestClient" , 2)]
+//    [FixtureInlineAutoData("TestClient3", 0)]
+    public async Task Get_UserCount_ReturnSuccessAndQuantityAndCorrectContentType(string userName, int qt)
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var query = new GetUsersCountQuery
+        {
+            FreeText = userName
+        };
+
+        // Act
+        using (var requestMessage =
+               new HttpRequestMessage(HttpMethod.Get, $"/UM/api/v1/Users/Count"))
+        {
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+            var response = await client.SendAsync(requestMessage);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var responseQt = int.Parse(responseString);
+            // Assert
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            Assert.Equal(responseQt, qt);
+            Assert.Equal("application/json; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
+        }
+    }
+    [Theory]
+    [FixtureInlineAutoData("123", "12345678")]
+    [FixtureInlineAutoData("12345678901234567890123456789012345678901234567890",
+        "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890")]
+    public async Task Create_User_ReturnCreatedAndCorrectContentType(string login, string password)
     {
         // Arrange
         var command = new CreateUserCommand()
         {
-            Login = "Login",
-            Password = "12345678"
+            Login = login,
+            Password = password
         };
         var client = _factory.CreateClient();
 
@@ -85,4 +157,97 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
                 response.Content.Headers.ContentType.ToString());
         }
     }
+
+    [Theory]
+    [FixtureInlineAutoData("17593112-cd8d-4c96-893b-f53c8cc31cda", "123")]
+    [FixtureInlineAutoData("17593112-cd8d-4c96-893b-f53c8cc31cda",
+        "12345678901234567890123456789012345678901234567890")]
+    public async Task Edit_User_ReturnOkAndCorrectContentType(string id, string newLogin)
+    {
+        // Arrange
+        var command = new UpdateUserCommand()
+        {
+            Id = id,
+            Login = newLogin
+            
+        };
+        var client = _factory.CreateClient();
+
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Put, $"/UM/api/v1/Users/{id}"))
+        {
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+            requestMessage.Content =
+                new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+            
+
+            var response = await client.SendAsync(requestMessage);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+
+            var responseObject = JsonSerializer.Deserialize<GetUserDto>(responseJson,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(responseObject!.Login, command.Login);
+            Assert.Equal("application/json; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
+        }
+    }
+
+    [Fact]
+    public async Task Delete_User_ReturnOk()
+    {
+        // Arrange
+        var command = new DeleteUserCommand()
+        {
+            Id = "17593112-cd8d-4c96-893b-f53c8cc31cda",
+        };
+        var client = _factory.CreateClient();
+
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Delete, $"/UM/api/v1/Users/{command.Id}"))
+        {
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+            requestMessage.Content =
+                new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+            
+            var response = await client.SendAsync(requestMessage);
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+    }
+
+    [Theory]
+    [FixtureInlineAutoData("17593112-cd8d-4c96-893b-f53c8cc31cda", "12345678")]
+    [FixtureInlineAutoData("17593112-cd8d-4c96-893b-f53c8cc31cda",
+        "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890")]
+
+    public async Task Update_UserPassword_ReturnOk(string userId, string newPassword)
+    {
+        // Arrange
+        var command = new UpdateUserPasswordCommand()
+        {
+            UserId = userId,
+            Password = newPassword
+        };
+        var client = _factory.CreateClient();
+
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Patch, $"/UM/api/v1/Users/{command.UserId}/password"))
+        {
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+            requestMessage.Content =
+                new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+
+            var response = await client.SendAsync(requestMessage);
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+    }
+
+
 }

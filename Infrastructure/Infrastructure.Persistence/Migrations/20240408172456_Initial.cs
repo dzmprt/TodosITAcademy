@@ -1,13 +1,13 @@
 ﻿using System;
-using Core.Users.Domain.Enums;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,88 +16,62 @@ namespace Infrastructure.Persistence.Migrations
                 name: "ApplicationUserRoles",
                 columns: table => new
                 {
-                    ApplicationUserRoleId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
+                    ApplicationUserRoleId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ApplicationUserRoles", x => x.ApplicationUserRoleId);
-                });
-            
-            migrationBuilder.InsertData(
-                table: "ApplicationUserRoles",
-                columns: new[] { "ApplicationUserRoleId", "Name" },
-                values: new object[,]
-                {
-                    { 1, "Client" },
-                    { 2, "Admin" },
                 });
 
             migrationBuilder.CreateTable(
                 name: "ApplicationUsers",
                 columns: table => new
                 {
-                    ApplicationUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Login = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastSingInDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    ApplicationUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Login = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LastSingInDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ApplicationUsers", x => x.ApplicationUserId);
-                });
-            
-            //Password 12345678
-            migrationBuilder.InsertData(
-                table: "ApplicationUsers",
-                columns: new[] { "ApplicationUserId", "Login", "PasswordHash", "CreatedDate" },
-                values: new object[,]
-                {
-                    { "35f37340-f9e5-4118-b949-08dc51cc57b7", "Admin", "$MYHASH$V1$10000$+X4Aw24Ud2+zdOsZVfe7S8tvhB2v4gKHMSrUFhWWVO8yZoSv", DateTime.UtcNow }
                 });
 
             migrationBuilder.CreateTable(
                 name: "ApplicationUserApplicationUserRole",
                 columns: table => new
                 {
-                    ApplicationUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ApplicationUserRoleId = table.Column<int>(type: "int", nullable: false)
+                    ApplicationUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ApplicationUserRoleId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ApplicationUserApplicationUserRole", x => new { x.ApplicationUserRoleId, x.ApplicationUserId });
                     table.ForeignKey(
-                        name: "FK_ApplicationUserApplicationUserRole_ApplicationUserRoles_ApplicationUserRoleId",
+                        name: "FK_ApplicationUserApplicationUserRole_ApplicationUserRoles_App~",
                         column: x => x.ApplicationUserRoleId,
                         principalTable: "ApplicationUserRoles",
                         principalColumn: "ApplicationUserRoleId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ApplicationUserApplicationUserRole_ApplicationUsers_ApplicationUserId",
+                        name: "FK_ApplicationUserApplicationUserRole_ApplicationUsers_Applica~",
                         column: x => x.ApplicationUserId,
                         principalTable: "ApplicationUsers",
                         principalColumn: "ApplicationUserId",
                         onDelete: ReferentialAction.Cascade);
-                });
-            
-            migrationBuilder.InsertData(
-                table: "ApplicationUserApplicationUserRole",
-                columns: new[] { "ApplicationUserId", "ApplicationUserRoleId"},
-                values: new object[,]
-                {
-                    { "35f37340-f9e5-4118-b949-08dc51cc57b7", 2 }
                 });
 
             migrationBuilder.CreateTable(
                 name: "RefreshTokens",
                 columns: table => new
                 {
-                    RefreshTokenId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ApplicationUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Expired = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    RefreshTokenId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ApplicationUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Expired = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -114,13 +88,13 @@ namespace Infrastructure.Persistence.Migrations
                 name: "Todos",
                 columns: table => new
                 {
-                    TodoId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    IsDone = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    TodoId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    IsDone = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    OwnerId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
