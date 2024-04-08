@@ -76,8 +76,9 @@ public class GetTodosQueryHandlerTest : RequestHandlerTestBase<GetTodosQuery, Ba
         var todos = TestFixture.Build<Todo>().CreateMany(10).ToArray();
         var count = todos.Length;
 
+
         _currentServiceMok.Setup(
-                p => p.UserInRole(ApplicationUserRolesEnum.Admin))
+                p => p.UserInRole(ApplicationUserRolesEnum.Client))
             .Returns(false);
 
         _todosMok.Setup(
@@ -91,4 +92,5 @@ public class GetTodosQueryHandlerTest : RequestHandlerTestBase<GetTodosQuery, Ba
         // act and assert
         await AssertNotThrow(query);
     }
+
 }
