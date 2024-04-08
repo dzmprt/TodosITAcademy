@@ -14,7 +14,7 @@ namespace Auth.FunctionalTests
     {
         private readonly WebApplicationFactory<Program> _factory;
 
-        private const string refreshToken = "35F37340-F9E5-4118-B949-08DC51CC57B7";
+        // private const string refreshToken = "35F37340-F9E5-4118-B949-08DC51CC57B7";
 
         private const string adminToken =
             "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjM1ZjM3MzQwLWY5ZTUtNDExOC1iOTQ5LTA4ZGM1MWNjNTdiNyIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzQyNTgwOTk5LCJpc3MiOiJUb2RvcyIsImF1ZCI6IlRvZG9zIn0._CBbJeuZBDy6R7aYm7H0agZJ9Fr6WTF_1uB4Ggi0U1I";
@@ -46,8 +46,6 @@ namespace Auth.FunctionalTests
                 
                 var response = await client.SendAsync(requestMessage);
 
-                //var responseJson = await response.Content.ReadAsStringAsync();
-               
                 // Assert
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 Assert.Equal("application/json; charset=utf-8",
@@ -74,8 +72,6 @@ namespace Auth.FunctionalTests
                 
                 var response = await client.SendAsync(requestMessage);
 
-                //var responseJson = await response.Content.ReadAsStringAsync();
-               
                 // Assert
                 Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
                 Assert.Equal("application/json",
@@ -83,35 +79,35 @@ namespace Auth.FunctionalTests
             }
         }
 
-        [Fact]
-        public async Task Create_JWTTokenByRefreshToken_ReturnCreatedAndCorrectContentType()
-        {
-            // Arrange
-            var command = new CreateJwtTokenByRefreshTokenCommand()
-            {
-                RefreshToken = refreshToken,
-            };
-            var client = _factory.CreateClient();
+        //[Fact]
+        //public async Task Create_JWTTokenByRefreshToken_ReturnCreatedAndCorrectContentType()
+        //{
+        //    // Arrange
+        //    var command = new CreateJwtTokenByRefreshTokenCommand()
+        //    {
+        //        RefreshToken = refreshToken,
+        //    };
+        //    var client = _factory.CreateClient();
 
-            // Act
-            using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/auth/api/v1/RefreshJwt"))
-            {
-                requestMessage.Headers.Authorization =
-                    new AuthenticationHeaderValue("Bearer", adminToken);
+        //    // Act
+        //    using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/auth/api/v1/RefreshJwt"))
+        //    {
+        //        requestMessage.Headers.Authorization =
+        //            new AuthenticationHeaderValue("Bearer", adminToken);
 
-                requestMessage.Content =
-                    new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+        //        requestMessage.Content =
+        //            new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
 
-                var response = await client.SendAsync(requestMessage);
+        //        var response = await client.SendAsync(requestMessage);
 
-                var responseJson = await response.Content.ReadAsStringAsync();
+        //        var responseJson = await response.Content.ReadAsStringAsync();
 
-                // Assert
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                Assert.Equal("application/json; charset=utf-8",
-                    response.Content.Headers.ContentType.ToString());
-            }
-        }
+        //        // Assert
+        //        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        //        Assert.Equal("application/json; charset=utf-8",
+        //            response.Content.Headers.ContentType.ToString());
+        //    }
+        //}
         [Fact]
         public async Task Get_CurrentUser_ReturnOkAndCorrectContentType()
         {

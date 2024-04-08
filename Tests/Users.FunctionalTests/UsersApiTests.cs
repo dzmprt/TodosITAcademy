@@ -10,9 +10,6 @@ using Users.Application.Handlers.Commands.CreateUser;
 using Users.Application.Handlers.Commands.DeleteUser;
 using Users.Application.Handlers.Commands.UpdateUser;
 using Users.Application.Handlers.Commands.UpdateUserPassword;
-
-//using JsonSerializer = System.Text.Json.JsonSerializer;
-
 namespace Users.FunctionalTests;
 
 public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
