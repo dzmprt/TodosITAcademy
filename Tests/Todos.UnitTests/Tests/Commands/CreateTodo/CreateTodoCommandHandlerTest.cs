@@ -52,8 +52,11 @@ namespace Todos.UnitTests.Tests.Commands.CreateTodo
             _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Admin)).Returns(true);
 
             var todo = TestFixture.Build<Todo>().Create();
+
             todo.OwnerId = GuidHelper.GetNotEqualGiud(userId);
-            await _todosMok.Object.AddAsync(todo, default);
+            _todosMok.Setup(
+                p => p.AddAsync(todo, default)
+                ).ReturnsAsync(todo);
 
             // act and assert
             await AssertNotThrow(command);

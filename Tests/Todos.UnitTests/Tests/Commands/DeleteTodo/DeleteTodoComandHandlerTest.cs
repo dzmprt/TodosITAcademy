@@ -46,41 +46,41 @@ namespace Todos.UnitTests.Tests.Commands.DeleteTodo
             => new DeleteTodoCommandHandler(_todosMok.Object, _currentServiceMok.Object, _cleanTodosCacheService);
 
         [Theory, FixtureInlineAutoData]
-        public async Task Should_BeValid_When_GetTodosByAdmin(DeleteTodoCommand command, Guid userId)
+        public async Task Should_BeValid_When_DeleteTodosByAdmin(DeleteTodoCommand command, Guid userId)
         {
             // arrange
             _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
             _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Admin)).Returns(true);
-
             var todo = TestFixture.Build<Todo>().Create();
+            int result = default;
             todo.OwnerId = GuidHelper.GetNotEqualGiud(userId);
             _todosMok.Setup(
-                p => p.AsAsyncRead().SingleOrDefaultAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default)
-            ).ReturnsAsync(todo);
+                p => p.RemoveAsync(todo, default)
+            ).ReturnsAsync(result);
 
             // act and assert
             await AssertNotThrow(command);
         }
 
         [Theory, FixtureInlineAutoData]
-        public async Task Should_BeValid_When_GetTodosByClient(DeleteTodoCommand command, Guid userId)
+        public async Task Should_BeValid_When_DeleteTodosByClient(DeleteTodoCommand command, Guid userId)
         {
             // arrange
             _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
             _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Client)).Returns(true);
-
             var todo = TestFixture.Build<Todo>().Create();
-            todo.OwnerId = userId;
+            int result = default;
+            todo.OwnerId = GuidHelper.GetNotEqualGiud(userId);
             _todosMok.Setup(
-                p => p.AsAsyncRead().SingleOrDefaultAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default)
-            ).ReturnsAsync(todo);
+                p => p.RemoveAsync(todo, default)
+            ).ReturnsAsync(result);
 
             // act and assert
             await AssertNotThrow(command);
         }
 
         [Theory, FixtureInlineAutoData]
-        public async Task Should_ThrowForbidden_When_GetTodosWithOtherOwnerByClient(DeleteTodoCommand command, Guid userId)
+        public async Task Should_ThrowForbidden_When_DeleteTodosWithOtherOwnerByClient(DeleteTodoCommand command, Guid userId)
         {
             // arrange
             _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);

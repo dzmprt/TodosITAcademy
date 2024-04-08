@@ -38,5 +38,65 @@ namespace Todos.UnitTests.Tests.Queries.GetTodo
 
         protected override IRequestHandler<GetTodoQuery, GetTodoDto> CommandHandler
             => new GetTodoQueryHandler(_todoMock.Object, _currentServiceMok.Object, _mapper, _todoMemoryCacheMock.Object );
+
+        [Theory, FixtureInlineAutoData]
+        public async Task Shoud_BeValid_When_GetByClient(GetTodoQuery query, Guid userId)
+        {
+            _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
+            _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Client)).Returns(true);
+
+            var todo = TestFixture.Build<Todo>().Create();
+            todo.OwnerId = userId;
+
+            _todoMock.Setup(
+                p => p.AsAsyncRead().SingleOrDefaultAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default)
+                ).ReturnsAsync(todo);
+
+            await AssertNotThrow(query);
+        }
+
+
+        [Theory, FixtureInlineAutoData]
+        public async Task Shoud_BeValid_When_GetByAdmin(GetTodoQuery query, Guid userId)
+        {
+            _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
+            _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Admin)).Returns(true);
+
+            var todo = TestFixture.Build<Todo>().Create();
+
+            _todoMock.Setup(
+                p => p.AsAsyncRead().SingleOrDefaultAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default)
+                ).ReturnsAsync(todo);
+
+            await AssertNotThrow(query);
+        }
+
+
+        [Theory, FixtureInlineAutoData]
+        public async Task Shoud_BeForbiden_When_GetByOtherClient(GetTodoQuery query, Guid userId)
+        {
+            _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
+            _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Client)).Returns(true);
+
+            var todo = TestFixture.Build<Todo>().Create();
+
+            _todoMock.Setup(
+                p => p.AsAsyncRead().SingleOrDefaultAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default)
+                ).ReturnsAsync(todo);
+
+            await AssertThrowForbiddenFound(query);
+        }
+
+        [Theory, FixtureInlineAutoData]
+        public async Task Shoud_BeNotValid_When_NotFound(GetTodoQuery query, Guid userId)
+        {
+            _currentServiceMok.SetupGet(p=>p.CurrentUserId).Returns(userId);
+
+            _todoMock.Setup(
+                p => p.AsAsyncRead().SingleOrDefaultAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default)
+                ).ReturnsAsync(null as Todo);
+
+            await AssertThrowNotFound(query);
+        }
     }
 }
