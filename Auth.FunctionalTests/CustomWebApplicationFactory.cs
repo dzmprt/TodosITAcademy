@@ -1,5 +1,4 @@
-using System.Data.Common;
-using Core.Application.Abstractions.Persistence;
+﻿using Core.Application.Abstractions.Persistence;
 using Core.Tests;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
@@ -7,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Users.FunctionalTests;
+namespace Auth.FunctionalTests;
 
 public class CustomWebApplicationFactory<TProgram>
     : WebApplicationFactory<TProgram> where TProgram : class
@@ -30,7 +29,7 @@ public class CustomWebApplicationFactory<TProgram>
                     "Server=localhost\\sqlexpress_2014;database=TodosTests;Integrated Security=False;User Id=sa;Password=sa;MultipleActiveResultSets=True;Trust Server Certificate=true;");
             });
         });
-        
+
         builder.UseEnvironment("Development");
     }
 }
