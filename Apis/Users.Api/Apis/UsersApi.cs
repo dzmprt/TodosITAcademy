@@ -45,6 +45,7 @@ public class UsersApi : IApi
             .WithTags(Tag)
             .WithOpenApi()
             .WithSummary("Get user")
+            .RequireAuthorization()
             .Produces<GetUserDto>();
 
         app.MapGet($"{_apiUrl}/Count", GetUsersCount)

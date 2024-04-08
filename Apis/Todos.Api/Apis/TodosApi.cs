@@ -45,8 +45,8 @@ public class TodosApi: IApi
             .WithTags(Tag)
             .WithOpenApi()
             .WithSummary("Get todos")
-            .Produces<GetTodoDto[]>()
-            .RequireAuthorization();
+            .Produces<GetTodoDto[]>();
+            //.RequireAuthorization();
         
         app.MapGet($"{_apiUrl}/Count", GetTodosCount)
             .WithTags(Tag)

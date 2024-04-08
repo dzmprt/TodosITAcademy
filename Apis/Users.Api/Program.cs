@@ -70,4 +70,5 @@ catch (Exception ex)
     logger.Fatal(ex.Message, ex);
 }
 
+
 public partial class Program { }

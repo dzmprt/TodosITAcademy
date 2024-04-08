@@ -7,7 +7,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.WebUtilities;
 using Users.Application.Dtos;
 using Users.Application.Handlers.Commands.CreateUser;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+using Users.Application.Handlers.Commands.DeleteUser;
+using Users.Application.Handlers.Commands.UpdateUser;
+using Users.Application.Handlers.Commands.UpdateUserPassword;
+
+//using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Users.FunctionalTests;
 
@@ -17,6 +21,7 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
 
     private const string adminToken =
         "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjM1ZjM3MzQwLWY5ZTUtNDExOC1iOTQ5LTA4ZGM1MWNjNTdiNyIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzQyMjUyMTc4LCJpc3MiOiJUb2RvcyIsImF1ZCI6IlRvZG9zIn0.Cs2O0VLJFtq_jEsT4DPzhIkjRhfwi9SJsW5ojMJd4Ps";
+    const string existUserId = "35f37340-f9e5-4118-b949-08dc51cc57b7";
 
     public UsersApiTests(CustomWebApplicationFactory<Program> factory)
     {
@@ -55,6 +60,62 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
         }
     }
 
+    [Theory]
+    [FixtureInlineAutoData(null, null)]
+    [FixtureInlineAutoData(null, 1)]
+    [FixtureInlineAutoData(1, null)]
+    [FixtureInlineAutoData(1, 1)]
+    public async Task Get_Users_Count_ReturnSuccessAndCorrectContentType(int? limit, int? offset)
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+
+        var query = new Dictionary<string, string?>
+        {
+            ["limit"] = limit?.ToString(),
+            ["offset"] = offset?.ToString(),
+        };
+
+        // Act
+        using (var requestMessage =
+               new HttpRequestMessage(HttpMethod.Get, QueryHelpers.AddQueryString("/UM/api/v1/Users/Count", query)))
+        {
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+
+            var response = await client.SendAsync(requestMessage);
+
+            // Assert
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            Assert.Equal("application/json; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
+        }
+    }
+
+
+    [Fact]
+    
+    public async Task Get_User_ReturnSuccessAndCorrectContentType()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+
+        // Act
+        using (var requestMessage =
+               new HttpRequestMessage(HttpMethod.Get, $"/UM/api/v1/Users/{existUserId}"))
+        {
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+
+            var response = await client.SendAsync(requestMessage);
+
+            // Assert
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            Assert.Equal("application/json; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
+        }
+    }
+
     [Fact]
     public async Task Create_User_ReturnCreatedAndCorrectContentType()
     {
@@ -69,6 +130,7 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
         // Act
         using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/UM/api/v1/Users"))
         {
+
             requestMessage.Content =
                 new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
 
@@ -83,6 +145,98 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
             Assert.Equal(responseObject!.Login, command.Login);
             Assert.Equal("application/json; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
+        }
+    }
+    
+    [Fact]
+    public async Task Update_User_ReturnOkAndCorrectContentType()
+    {
+        // Arrange
+        var command = new UpdateUserCommand()
+        {
+            Login = "NewLogin",
+        };
+        var client = _factory.CreateClient();
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Put, $"/UM/api/v1/Users/{existUserId}"))
+        {
+          
+
+            requestMessage.Content =
+                new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+            var response = await client.SendAsync(requestMessage);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+            var responseObject = JsonSerializer.Deserialize<GetUserDto>(responseJson,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(responseObject!.Login, command.Login);
+            Assert.Equal("application/json; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
+        }
+    } 
+    [Fact]
+    public async Task Update_UserPassword_ReturnOkAndCorrectResponseValue()
+    {
+        // Arrange
+        var payload = new UpdateUserPasswordPayload()
+        {
+            Password = "NewPassword"
+        };
+        var command = new UpdateUserPasswordCommand()
+        {
+            UserId = existUserId,
+            Password = payload.Password,
+        };
+        var client = _factory.CreateClient();
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Patch, $"/UM/api/v1/Users/{existUserId}/Password"))
+        {
+          
+            requestMessage.Content =
+                new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+            var response = await client.SendAsync(requestMessage);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+            
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("", responseJson);
+            
+        }
+    }
+    [Fact]
+    public async Task Delete_User_ReturnOkAndCorrectContentType()
+    {
+        //Arrange
+       var command = new DeleteUserCommand()
+       {
+           Id = existUserId
+       };
+
+        var client = _factory.CreateClient();
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Delete, $"/UM/api/v1/Users/{existUserId}"))
+        {
+
+            requestMessage.Content =
+                new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+            var response = await client.SendAsync(requestMessage);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("", responseJson);
+
         }
     }
 }
