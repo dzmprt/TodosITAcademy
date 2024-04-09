@@ -7,6 +7,12 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.WebUtilities;
 using Users.Application.Dtos;
 using Users.Application.Handlers.Commands.CreateUser;
+using Users.Application.Handlers.Commands.DeleteUser;
+using Users.Application.Handlers.Commands.UpdateUser;
+using Users.Application.Handlers.Commands.UpdateUserPassword;
+using Users.Application.Handlers.Queries.GetUser;
+using Users.Application.Handlers.Queries.GetUsers;
+using Users.Application.Handlers.Queries.GetUsersCount;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Users.FunctionalTests;
@@ -22,7 +28,7 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         _factory = factory;
     }
-
+    #region --Positive--
     [Theory]
     [FixtureInlineAutoData(null, null)]
     [FixtureInlineAutoData(null, 1)]
@@ -52,6 +58,60 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
             response.EnsureSuccessStatusCode(); // Status Code 200-299
             Assert.Equal("application/json; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
+        }
+    }
+
+
+    [Fact]
+    public async Task Get_User_ReturnOk()
+    {
+        var command = new GetUserQuery()
+        {
+            Id = "f596e3a5-17af-4e8c-7f9b-08dc587db203",
+        };
+        var client = _factory.CreateClient();
+
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, "/UM/api/v1/Users/" + command.Id))
+        {
+            requestMessage.Content =
+                new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+
+            var response = await client.SendAsync(requestMessage);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+    }
+
+
+    [Fact]
+    public async Task GetCount_User_ReturnOk()
+    {
+        var command = new GetUsersCountQuery()
+        {
+            FreeText = "test"
+        };
+        var client = _factory.CreateClient();
+
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, "/UM/api/v1/Users/"))
+        {
+            requestMessage.Content =
+                new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+
+            var response = await client.SendAsync(requestMessage);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
 
@@ -85,4 +145,253 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
                 response.Content.Headers.ContentType.ToString());
         }
     }
+
+
+    [Fact]
+    public async Task Update_User_ReturnOk()
+    {
+        var command = new UpdateUserCommand()
+        {
+            Id = "f596e3a5-17af-4e8c-7f9b-08dc587db203",
+            Login = "test login"
+        };
+        var client = _factory.CreateClient();
+
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Put, "/UM/api/v1/Users/" + command.Id))
+        {
+            requestMessage.Content =
+                new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+
+            var response = await client.SendAsync(requestMessage);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+    }
+
+    [Fact]
+    public async Task UpdatePassword_User_ReturnOk()
+    {
+        var command = new UpdateUserPasswordCommand()
+        {
+            UserId = "397833e1-f069-4b89-7fa2-08dc587db203",
+            Password = "1234567890"
+        };
+        var client = _factory.CreateClient();
+
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Patch, "/UM/api/v1/Users/" + command.UserId + "/Password"))
+        {
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+            requestMessage.Content =
+                new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+
+            var response = await client.SendAsync(requestMessage);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+    }
+
+    [Fact]
+    public async Task Delete_User_ReturnOk() //!!!
+    {
+        // Arrange
+        var command = new DeleteUserCommand()
+        {
+            Id = "f596e3a5-17af-4e8c-7f9b-08dc587db202"
+        };
+        var client = _factory.CreateClient();
+
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Delete, "/UM/api/v1/Users/" + command.Id))
+        {
+            requestMessage.Content =
+                new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+
+            var response = await client.SendAsync(requestMessage);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+    }
+    #endregion
+
+    #region --Negative--
+    [Theory]
+    [FixtureInlineAutoData(null, -1)]
+    [FixtureInlineAutoData(-1, null)]
+    [FixtureInlineAutoData(-1, 1)]
+    public async Task Get_Users_InvalidRequest(int? limit, int? offset)
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+
+        var query = new Dictionary<string, string?>
+        {
+            ["limit"] = limit?.ToString(),
+            ["offset"] = offset?.ToString(),
+        };
+
+        // Act
+        using (var requestMessage =
+               new HttpRequestMessage(HttpMethod.Get, QueryHelpers.AddQueryString("/UM/api/v1/Users", query)))
+        {
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+
+            var response = await client.SendAsync(requestMessage);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+    }
+
+    [Fact]
+    public async Task Get_User_ReturnNotFound_WhenNoUser()
+    {
+        var command = new GetUserQuery()
+        {
+            Id = "0c0b2152-6955-47a8-783a-08dc5876efdb",
+        };
+        var client = _factory.CreateClient();
+
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, "/UM/api/v1/Users/" + command.Id))
+        {
+            requestMessage.Content =
+                new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+
+            var response = await client.SendAsync(requestMessage);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+    }
+
+    
+    [Fact]
+    public async Task Create_User_ReturnNotValid_WhenIdExists()
+    {
+        // Arrange
+        var command = new CreateUserCommand()
+        {
+            Login = "admin",
+            Password = "12345678"
+        };
+        var client = _factory.CreateClient();
+
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/UM/api/v1/Users"))
+        {
+            requestMessage.Content =
+                new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+
+            var response = await client.SendAsync(requestMessage);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+    }
+
+    [Fact]
+    public async Task Update_User_ReturnNotFound_WhenNotFound()
+    {
+        var command = new UpdateUserCommand()
+        {
+            Id = "a2939f2f-4b99-4797-783b-08dc5876efdb",
+            Login = "test login"
+        };
+        var client = _factory.CreateClient();
+
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Put, "/UM/api/v1/Users/" + command.Id))
+        {
+            requestMessage.Content =
+                new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+
+            var response = await client.SendAsync(requestMessage);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+    }
+
+    [Fact]
+    public async Task UpdatePassword_ReturnNotFound_WhenNotFound()
+    {
+        var command = new UpdateUserPasswordCommand()
+        {
+            UserId = "397833e1-f069-4b89-7fa2-08dc587db202",
+            Password = "1234567890"
+        };
+        var client = _factory.CreateClient();
+
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Patch, "/UM/api/v1/Users/" + command.UserId + "/Password"))
+        {
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+            requestMessage.Content =
+                new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+
+            var response = await client.SendAsync(requestMessage);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+    }
+
+    
+    [Fact]
+    public async Task Delete_User_ReturnNotFound_WhenNotFound() //!!!
+    {
+        // Arrange
+        var command = new DeleteUserCommand()
+        {
+            Id = "f596e3a5-17af-4e8c-7f9b-08dc587db202"
+        };
+        var client = _factory.CreateClient();
+
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Delete, "/UM/api/v1/Users/" + command.Id))
+        {
+            requestMessage.Content =
+                new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+
+            var response = await client.SendAsync(requestMessage);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+    }
+    #endregion
 }
