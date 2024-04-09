@@ -12,7 +12,7 @@ using Users.Application.Handlers.Queries.GetUser;
 
 namespace Users.Application.Handlers.Commands.DeleteUser;
 
-internal class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
+internal class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, Unit>
 {
     private readonly IBaseWriteRepository<ApplicationUser> _users;
     
@@ -42,7 +42,7 @@ internal class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
         _userCase = userCase;
     }
     
-    public async Task Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
         var userId = Guid.Parse(request.Id);
         
@@ -63,5 +63,6 @@ internal class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
         _countCache.Clear();
         _logger.LogWarning($"User {user.ApplicationUserId.ToString()} deleted by {_currentUserService.CurrentUserId.ToString()}");
         _userCase.DeleteItem(new GetUserQuery {Id = user.ApplicationUserId.ToString()});
+        return default;
     }
 }

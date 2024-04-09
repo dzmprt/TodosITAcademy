@@ -83,7 +83,7 @@ public class TodosApi: IApi
         app.MapDelete($"{_apiUrl}/{{id}}", DeleteTodo)
             .WithTags(Tag)
             .WithOpenApi()
-            .WithSummary("Delete user")
+            .WithSummary("Delete todo")
             .RequireAuthorization();
 
         #endregion

@@ -9,7 +9,7 @@ using Todos.Domain;
 
 namespace Todos.Applications.Handlers.Commands.DeleteTodo;
 
-internal class DeleteTodoCommandHandler : IRequestHandler<DeleteTodoCommand>
+internal class DeleteTodoCommandHandler : IRequestHandler<DeleteTodoCommand, Unit>
 {
     private readonly IBaseWriteRepository<Todo> _todos;
     
@@ -25,7 +25,7 @@ internal class DeleteTodoCommandHandler : IRequestHandler<DeleteTodoCommand>
         _cleanTodosCacheService = cleanTodosCacheService;
     }
     
-    public async Task Handle(DeleteTodoCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(DeleteTodoCommand request, CancellationToken cancellationToken)
     {
         var todo = await _todos.AsAsyncRead().SingleOrDefaultAsync(e => e.TodoId == request.TodoId, cancellationToken);
         if (todo is null)
@@ -41,5 +41,6 @@ internal class DeleteTodoCommandHandler : IRequestHandler<DeleteTodoCommand>
 
         await _todos.RemoveAsync(todo, cancellationToken);
         _cleanTodosCacheService.ClearAllCaches();
+        return default;
     }
 }
