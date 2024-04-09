@@ -68,3 +68,4 @@ catch (Exception ex)
         .CreateLogger();
     logger.Fatal(ex.Message, ex);
 }
+public partial class Program { }

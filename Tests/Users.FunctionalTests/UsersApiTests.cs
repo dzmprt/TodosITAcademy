@@ -31,7 +31,7 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
      */
 
     private const string adminToken =
-        "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiVGVzdENsaWVudDEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjE3NTkzMTEyLWNkOGQtNGM5Ni04OTNiLWY1M2M4Y2MzMWNkYSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkNsaWVudCIsImV4cCI6MTc0MjU5OTMzNiwiaXNzIjoiVG9kb3MiLCJhdWQiOiJUb2RvcyJ9.-_p-dqK_yPvr3WycFdCDgT1VjOOEDCGrEb4Q2gicckg";
+        "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiVGVzdENsaWVudDEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjE3NTkzMTEyLWNkOGQtNGM5Ni04OTNiLWY1M2M4Y2MzMWNkYSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkNsaWVudCIsImV4cCI6MTc0MjY2MjU3NCwiaXNzIjoiVG9kb3MiLCJhdWQiOiJUb2RvcyJ9.Ybed_55LO5ktT8nVnWzMDoiy5fL9SFFcPdFcXcRJJ1Y";
 
     public UsersApiTests(CustomWebApplicationFactory<Program> factory)
     {
@@ -103,14 +103,14 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         // Arrange
         var client = _factory.CreateClient();
-        var query = new GetUsersCountQuery
+        var query = new Dictionary<string, string?>
         {
-            FreeText = userName
+            ["FreeText"] = userName,
         };
 
         // Act
         using (var requestMessage =
-               new HttpRequestMessage(HttpMethod.Get, $"/UM/api/v1/Users/Count"))
+               new HttpRequestMessage(HttpMethod.Get, QueryHelpers.AddQueryString("/UM/api/v1/Users/Count", query)))
         {
             requestMessage.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", adminToken);
