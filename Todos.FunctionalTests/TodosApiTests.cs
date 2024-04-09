@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Todos.Applications.DTOs;
 using Todos.Applications.Handlers.Commands.CreateTodo;
 using Todos.Applications.Handlers.Commands.UpdateTodo;
+using Todos.Applications.Handlers.Commands.UpdateTodoIsDone;
 
 namespace Todos.FunctionalTests;
 
@@ -87,20 +88,19 @@ public class TodosApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
         }
     }
 
-/*    [Fact]
+    [Fact]
     public async Task Update_Todo_ReturnOKAndCorrectContentType()
     {
         // Arrange
         var command = new UpdateTodoCommand()
         {
-            TodoId = 1,
             Name = "test",
             IsDone = true,
         };
         var client = _factory.CreateClient();
 
         // Act
-        using (var requestMessage = new HttpRequestMessage(HttpMethod.Put, "api/v1/Todos"))
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Put, "api/v1/Todos/1"))
         {
             requestMessage.Content =
                 new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
@@ -119,6 +119,56 @@ public class TodosApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
             Assert.Equal("application/json; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
         }
-    }*/
+    }
 
+    [Fact]
+    public async Task Update_Todo_Is_Done_ReturnOKAndCorrectContentType()
+    {
+        // Arrange
+        var command = new UpdateTodoIsDoneCommand()
+        {
+            IsDone = true,
+        };
+        var client = _factory.CreateClient();
+
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Patch, "api/v1/Todos/4/IsDone"))
+        {
+            requestMessage.Content =
+                new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+
+            var response = await client.SendAsync(requestMessage);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+            var responseObject = JsonSerializer.Deserialize<GetTodoDto>(responseJson,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(responseObject!.IsDone, command.IsDone);
+            Assert.Equal("application/json; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
+        }
+    }
+/*
+    [Fact]
+    public async Task Delete_Todo_ReturnOK()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+
+        // Act
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Delete, "api/v1/Todos/3"))
+        {
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", adminToken);
+
+            var response = await client.SendAsync(requestMessage);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+    }*/
 }
