@@ -27,7 +27,7 @@ public class CustomWebApplicationFactory<TProgram>
             services.AddDbContext<DbContext, ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(
-                    "Server=.;database=TodosTests;Integrated Security=False;User Id=sa;Password=0bd7903b-f568-4894-8d72-3c1b507e5644;MultipleActiveResultSets=True;Trust Server Certificate=true;");
+                    "Server=(localdb)\\MSSQLLocalDB;Database=TestTodo;Trusted_Connection=True");
             });
         });
         
