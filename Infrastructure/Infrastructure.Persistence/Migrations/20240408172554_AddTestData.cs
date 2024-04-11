@@ -5,33 +5,40 @@
 namespace Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class AddTestClientsAndTodos : Migration
+    public partial class AddTestData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            //Password 12345678
             migrationBuilder.InsertData(
-                table: "ApplicationUsers",
-                columns: new[] { "ApplicationUserId", "Login", "PasswordHash", "CreatedDate" },
-                values: new object[,]
-                {
+    table: "ApplicationUserRoles",
+    columns: new[] { "ApplicationUserRoleId", "Name" },
+    values: new object[,]
+    {
+                    { 1, "Client" },
+                    { 2, "Admin" },
+    });
+            migrationBuilder.InsertData(
+    table: "ApplicationUsers",
+    columns: new[] { "ApplicationUserId", "Login", "PasswordHash", "CreatedDate" },
+    values: new object[,]
+    {
                     { "17593112-cd8d-4c96-893b-f53c8cc31cda", "TestClient1", "$MYHASH$V1$10000$+X4Aw24Ud2+zdOsZVfe7S8tvhB2v4gKHMSrUFhWWVO8yZoSv", DateTime.UtcNow },
                     { "2b4945ab-97a7-49c8-098b-08dc5356fbaa", "TestClient2", "$MYHASH$V1$10000$+X4Aw24Ud2+zdOsZVfe7S8tvhB2v4gKHMSrUFhWWVO8yZoSv", DateTime.UtcNow }
-                });
-            
+    });
+
             migrationBuilder.InsertData(
                 table: "ApplicationUserApplicationUserRole",
-                columns: new[] { "ApplicationUserId", "ApplicationUserRoleId"},
+                columns: new[] { "ApplicationUserId", "ApplicationUserRoleId" },
                 values: new object[,]
                 {
                     { "2b4945ab-97a7-49c8-098b-08dc5356fbaa", 1 },
                     { "17593112-cd8d-4c96-893b-f53c8cc31cda", 1 }
                 });
-            
+
             migrationBuilder.InsertData(
                 table: "Todos",
-                columns: new[] { "Name", "IsDone", "CreatedDate", "OwnerId"},
+                columns: new[] { "Name", "IsDone", "CreatedDate", "OwnerId" },
                 values: new object[,]
                 {
                     { "TestClient1 todo 1", true, DateTime.UtcNow.AddHours(-30), "17593112-cd8d-4c96-893b-f53c8cc31cda",},
@@ -64,7 +71,7 @@ namespace Infrastructure.Persistence.Migrations
                     { "TestClient1 todo 28", false, DateTime.UtcNow.AddHours(-3), "17593112-cd8d-4c96-893b-f53c8cc31cda",},
                     { "TestClient1 todo 29", false, DateTime.UtcNow.AddHours(-2), "17593112-cd8d-4c96-893b-f53c8cc31cda",},
                     { "TestClient1 todo 30", false, DateTime.UtcNow.AddHours(-1), "17593112-cd8d-4c96-893b-f53c8cc31cda",},
-                    
+
                     { "TestClient2 todo 1", true, DateTime.UtcNow.AddHours(-30), "2b4945ab-97a7-49c8-098b-08dc5356fbaa",},
                     { "TestClient2 todo 2", true, DateTime.UtcNow.AddHours(-29), "2b4945ab-97a7-49c8-098b-08dc5356fbaa",},
                     { "TestClient2 todo 3", true, DateTime.UtcNow.AddHours(-28), "2b4945ab-97a7-49c8-098b-08dc5356fbaa",},

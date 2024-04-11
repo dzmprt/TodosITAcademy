@@ -15,7 +15,7 @@ public static class DependencyInjection
     {
         return services.AddDbContext<DbContext, ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
             })
             .AddScoped<IContextTransactionCreator, ContextTransactionCreator>()
             .AddTransient(typeof(IBaseReadRepository<>), typeof(BaseRepository<>))

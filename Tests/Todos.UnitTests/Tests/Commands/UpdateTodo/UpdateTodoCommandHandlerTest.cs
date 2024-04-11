@@ -44,7 +44,6 @@ public class UpdateTodoCommandHandlerTest : RequestHandlerTestBase<UpdateTodoCom
         // arrange
         _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
         _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Admin)).Returns(true);
-
         var todo = TestFixture.Build<Todo>().Create();
         todo.OwnerId = GuidHelper.GetNotEqualGiud(userId);
         _todosMok.Setup(
@@ -61,7 +60,6 @@ public class UpdateTodoCommandHandlerTest : RequestHandlerTestBase<UpdateTodoCom
         // arrange
         _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
         _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Client)).Returns(true);
-
         var todo = TestFixture.Build<Todo>().Create();
         todo.OwnerId = userId;
         _todosMok.Setup(
@@ -78,23 +76,20 @@ public class UpdateTodoCommandHandlerTest : RequestHandlerTestBase<UpdateTodoCom
         // arrange
         _currentServiceMok.SetupGet(p => p.CurrentUserId).Returns(userId);
         _currentServiceMok.Setup(p => p.UserInRole(ApplicationUserRolesEnum.Client)).Returns(true);
-
         var todo = TestFixture.Build<Todo>().Create();
         todo.OwnerId = GuidHelper.GetNotEqualGiud(userId);
-
         _todosMok.Setup(
             p => p.AsAsyncRead().SingleOrDefaultAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default)
         ).ReturnsAsync(todo);
  
         // act and assert
-        await AssertThrowForbiddenFound(command);
+        await AssertThrowForbidden(command);
     }
     
     [Theory, FixtureInlineAutoData]
     public async Task Should_ThrowNotFound_When_TodoNotFound(UpdateTodoCommand command)
     {
         // arrange
-
         _todosMok.Setup(
             p => p.AsAsyncRead().SingleOrDefaultAsync(It.IsAny<Expression<Func<Todo, bool>>>(), default)
         ).ReturnsAsync(null as Todo);

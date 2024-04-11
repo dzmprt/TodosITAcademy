@@ -14,6 +14,7 @@ public class MocContextTransactionCreator : IContextTransactionCreator
 
     public async Task<IContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken)
     {
+        
         return new MocContextTransaction(await _dbContext.Database.BeginTransactionAsync(cancellationToken));
     }
 }
