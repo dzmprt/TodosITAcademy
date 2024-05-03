@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <title>Home</title>
+    <link rel="icon" type="image/x-icon" href="https://www.w3schools.com/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/home.css">
+</head>
+
+<body>
+
+    <script src="./js/models/todo.js"></script>
+    <script src="./js/services/todosService.js"></script>
+
+
+    <header class="nav-bar">
+        <a>Home</a>
+        <a href="./about.html">About</a>
+        <div class="separator"></div>
+        <a href="./singing.html">Sing-in</a>
+    </header>
+
+    <div class="main-container">
+        <div class="todos-container">
+            <form class="add-todo-form">
+                <input id="newTodoName" type="text" placeholder="New todo">
+                <button type="button" onclick="AddTodo()">Add</button>
+            </form>
+            <div id="todosContainer">
+
+            </div>
+        </div>
+
+    </div>
+
+    <script defer>
+        let todoIdToUpdate = null;
+        let newTodoLabe = null;
+
+        function SetEdit(todoId) {
+            // if(todoIdToUpdate != null){
+
+            // }
+            todoIdToUpdate = todoId;
+            let todoToEdit = getTodo(todoId);
+            newTodoLabe = todoToEdit.name;
+            todosRender();
+        }
+
+        function SaveEditChanges(){
+            let todoToEdit = getTodo(todoIdToUpdate);
+            todoToEdit.name = newTodoLabe;
+            updateTodo(todoToEdit);
+            todoIdToUpdate = null;
+            newTodoLabe = null;
+            todosRender();
+        }
+
+        function SwitchDone(todoId) {
+            let todoToChange = getTodo(todoId);
+            todoToChange.isDone = !todoToChange.isDone;
+            updateTodo(todoToChange);
+            todosRender();
+        }
+
+        function DeleteTodo(todoId) {
+
+            let isDelete = confirm("Удалить эту todo?");
+            if (isDelete) {
+                deleteTodo(todoId);
+                todosRender();
+            }
+        }
+
+        function AddTodo() {
+            let todos = getTodos();
+            let newTodoId = 1;
+            if (todos.length > 0) {
+                var todoWithLastId = todos.sort((t1, t2) => t2.todoId - t1.todoId)[0];
+                newTodoId = todoWithLastId.todoId + 1;
+            }
+
+            var todoName = document.getElementById("newTodoName").value;
+            var todo = new Todo(newTodoId, todoName, false, new Date(), new Date(), 1);
+            addTodo(todo);
+            todosRender();
+        }
+
+        function nameInputChanged(event){
+            newTodoLabe = document.getElementById("nameChangeInput").value
+        }
+
+        function todosRender() {
+
+            var todos = getTodos();
+            let renderHtml = ''
+            for (let i = 0; i < todos.length; i++) {
+                renderHtml += `<div class="todo-item">`;
+
+                if (todos[i].isDone) {
+                    renderHtml += `<input onclick="SwitchDone(${todos[i].todoId})" checked type="checkbox"> `;
+                } else {
+                    renderHtml += `<input onclick="SwitchDone(${todos[i].todoId})" type="checkbox"> `;
+
+                }
+
+                renderHtml += `<div class="label-container">`
+
+                if (todos[i].todoId == todoIdToUpdate) {
+                    renderHtml += `<input id="nameChangeInput" onchange="nameInputChanged()" onfocusout="SaveEditChanges()" type="text" value="${newTodoLabe}"></input>`;
+                } else {
+                    renderHtml += `<label onclick="SetEdit(${todos[i].todoId})" >${todos[i].name}</label>`;
+                }
+
+                renderHtml += `</div>
+                <div class="delete-and-time-container">
+                    <button onclick="DeleteTodo(${todos[i].todoId})" class="btn-delete">Delete</button>
+                </div>
+            </div>`
+            }
+            document.getElementById("todosContainer").innerHTML = renderHtml;
+        }
+        document.addEventListener('DOMContentLoaded', todosRender);
+    </script>
+</body>
+
+</html>

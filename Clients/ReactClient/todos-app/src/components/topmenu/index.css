@@ -1,0 +1,26 @@
+.nav-bar {
+    background-color: #4188D2;
+    padding: 10px 15px;
+    display: flex;
+    box-shadow: #04376C 0 0 4px;
+}
+
+.nav-bar a {
+    margin: 0 5px;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+}
+
+.separator {
+    flex-grow: 1;
+}
+
+.nav-bar a:hover {
+    color: #04376C;
+}
+
+.nav-bar .active {
+    pointer-events: none;
+    opacity: 0.5;
+}

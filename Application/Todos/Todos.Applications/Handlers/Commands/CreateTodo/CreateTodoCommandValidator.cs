@@ -6,6 +6,6 @@ internal class CreateTodoCommandValidator : AbstractValidator<CreateTodoCommand>
 {
     public CreateTodoCommandValidator()
     {
-        RuleFor(e => e.Name).NotEmpty().MaximumLength(200);
+        RuleFor(e => e.Name).NotEmpty().MaximumLength(50);
     }
 }

@@ -42,18 +42,19 @@ try
     var app = builder.Build();
     
     app.RunDbMigrations().RegisterApis(Assembly.GetExecutingAssembly(), $"{appPrefix}/api/{version}");
-    
+
     app.UseCoreExceptionHandler()
         .UseAuthExceptionHandler()
         .UseSwagger(c => { c.RouteTemplate = appPrefix + "/swagger/{documentname}/swagger.json"; })
         .UseSwaggerUI(options =>
-            {
-                options.SwaggerEndpoint("/" + appPrefix + $"/swagger/{version}/swagger.json", version);
-                options.RoutePrefix = appPrefix + "/swagger";
-            })
+        {
+            options.SwaggerEndpoint("/" + appPrefix + $"/swagger/{version}/swagger.json", version);
+            options.RoutePrefix = appPrefix + "/swagger";
+        })
         .UseAuthentication()
         .UseAuthorization()
-        .UseHttpsRedirection();
+        .UseHttpsRedirection()
+        .UseCors(CorsPolicy.AllowAll);
     
     app.Run();
 }

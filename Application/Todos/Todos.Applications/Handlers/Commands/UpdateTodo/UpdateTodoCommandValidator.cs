@@ -7,6 +7,6 @@ internal class UpdateTodoCommandValidator : AbstractValidator<UpdateTodoCommand>
     public UpdateTodoCommandValidator()
     {
         RuleFor(e => e.TodoId).GreaterThan(0);
-        RuleFor(e => e.Name).NotEmpty().MaximumLength(200);
+        RuleFor(e => e.Name).NotEmpty().MaximumLength(50);
     }
 }
