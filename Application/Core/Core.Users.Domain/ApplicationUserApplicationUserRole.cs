@@ -6,5 +6,6 @@ public class ApplicationUserApplicationUserRole
     public ApplicationUser ApplicationUser { get; set; } = default!;
 
     public int ApplicationUserRoleId { get; set; }
+
     public ApplicationUserRole Role { get; set; } = default!;
 }
